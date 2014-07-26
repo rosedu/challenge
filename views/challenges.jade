@@ -1,0 +1,34 @@
+extends layout
+
+block content
+
+  .announcement
+    .announcement-inner
+      p Competitia a inceput. Contribuie si tu !
+  .spacer
+
+  - each c in challenges
+    .card.css3-shadow
+
+      .card-ch-right
+        img(src='#{c.logo}', width='300px', max-height='500px')
+
+      .card-ch-left
+        h1
+          a(href='/challenges/' + c.link)= c.name
+        h5= c.start
+        br
+        p= c.description
+
+      .spacer
+      .spacer
+      .card-ch-bottom
+        - if (c.status == 'tease')
+          | Challenge will start soon. Be sure to join.
+
+        - if (c.status == 'live')
+          a(href='/challenges/' + c.link + '/pulls')= c.pulls.length + " commits"
+          = " - "
+          a(href='/challenges/' + c.link + '/users')= c.users.length + " participants"
+
+    .spacer

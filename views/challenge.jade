@@ -1,0 +1,222 @@
+extends layout
+
+block content
+
+  #menu
+    #idea-desc
+      #idea-desc-top
+        #idea-desc-top-title= challenge.name
+
+      .spacer
+      #idea-description-right
+        #description-stats
+          #description-stats-left
+            .description-stats-score= challenge.pulls.length
+            = " created "
+          #description-stats-separator= "|"
+          #description-stats-right
+            .description-stats-score= challenge.merged
+            = " merged "
+          #description-stats-bottom
+            p= challenge.users.length + " users"
+        #description-logo
+          img(src='#{challenge.logo}', width='150px', max-height='300px')
+
+      #idea-description
+        p!= challenge.description_mk
+
+      #idea-desc-buttom
+        - if (challenge.status == 'closed')
+          h4 This challenge has ended.
+        - else if (!user)
+          a(href='/login')
+            input.btn.btn-success(type='submit', value='Join challenge')
+        - else if (user && !user.joined && !user.admin)
+          a(href='/challenges/' + challenge.link + '/join')
+            input.btn.btn-success(type='submit', value='Join challenge')
+        - else
+          input.btn.btn-success(type='submit', value='Joined', disabled)
+        - if (user && user.admin)
+          a(href='/challenges/' + challenge.link + '/admin')
+            input.btn.btn-success(type='submit', value='Edit challenge')
+
+  #content
+    .left
+      - if (currentUrl == '/challenges/' + challenge.link)
+        h2 Repositories
+        - if (challenge.repos.length)
+          - for (var r=0; r<challenge.repos.length; r++)
+            .ch-repo
+              .profile-repo-icon-forked
+              .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
+              a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+          .ch-pull-info= "* Fork the project and contribute now."
+        - else
+          p There are no repos set for this challenge.
+        .spacer
+
+        h2 Time
+        - if (challenge.start_f && challenge.end_f)
+          p= "Challenge starts on "
+            b= challenge.start_f
+            = " and ends on "
+            b= challenge.end_f
+            = ". Make sure you submit your pull requests on time."
+          p= "Last refresh date: " + (challenge.refresh? challenge.refresh : 'N/A')
+        - else
+          | Time interval not set.
+        .spacer
+
+        h2 About
+        - if (challenge.about)
+          p!= challenge.about_mk
+        - else
+          | No other information about this repo or organisation.
+        .spacer
+
+        h2 Contact
+        - if (!challenge.email)
+          | No contact infomation provided.
+        - else
+          = "Use "
+          b= challenge.email
+          = " to get in contact with the organizers."
+
+      - if (currentUrl == '/challenges/' + challenge.link + '/pulls')
+        h2 Pull requests
+        - if (pulls.length != 0)
+          - each p in pulls
+            .ch-pull
+              a(href='/#{p.auth}')= p.auth
+              .ch-pull-info= "#" + p.repo
+              br
+              a(href='#{p.url}')= p.title
+              - if (p.merged)
+                .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
+              - else
+                .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+        - else
+          p There are no pull requests created yet.
+        .spacer
+
+      - if (currentUrl == '/challenges/' + challenge.link + '/admin')
+        h2 Challenge status
+        - if (challenge.status == 'tease')
+          h5 Challenge is currently teasing. Add more info and start it.
+        - if (challenge.status == 'live')
+          h5 Challenge is currently live.
+        - if (challenge.status == 'closed')
+          h5 Challenge is closed.
+
+        .spacer
+        h2 Repository
+        - if (challenge.repos.length)
+          - for (var r=0; r<challenge.repos.length; r++)
+            .ch-repo
+              .ch-pull-info
+                a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
+              a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+              = " -- " + challenge.created_no[r] + " created, " + challenge.merged_no[r] + " merged"
+        - else
+          p There are no repos added. Use the form below to get started.
+
+
+        .spacer
+        h2 Settings
+        form(method='post', action='/challenges/' + challenge.link + '/edit')
+          label Challenge name
+          input.span5(name='name', type='text', value='#{challenge.name}', required)
+
+          label Challenge status
+          select.selectpicker.span5(name='status', type='text')
+            - if (challenge.status == 'tease')
+              option(selected) tease
+            - else
+              option tease
+            - if (challenge.status == 'live')
+              option(selected) live
+            - else
+              option live
+            - if (challenge.status === 'closed')
+              option(selected) closed
+            - else
+              option closed
+
+          label Add repository (format: user/repo)
+          input.span5(name='repos', type='text')
+          p To add more, space separe items.
+
+          label About project/repo
+          textarea.span7(name='about', rows='4')= challenge.about
+          p *Use markdown to style content.
+
+          label Contact email
+          input.span5(name='email', type='text', value='#{challenge.email}')
+
+          label Challenge logo
+          input.span5(name='logo', type='text', value='#{challenge.logo}')
+          p *Use link to image.
+
+          label Description
+          textarea.span9(name='description', rows='6')= challenge.description
+          p *Use markdown to style content.
+
+          label= "Start / End date (format: DD/MM/YYYY): "
+          input.span2.datepicker(name='start', type='text', value='#{challenge.start_f}')
+          = " / "
+          input.span2.datepicker(name='end', type='text', value='#{challenge.end_f}')
+
+          br
+          input.btn.btn-success(type='submit', value='Save')
+
+        .spacer
+        h2 Manage admins
+        - each a in challenge.admins
+          p= a + " "
+            a(href='/challenges/' + challenge.link + '/admin_remove?name=' + a) Remove
+        form(method='post', action='/challenges/' + challenge.link + '/admin_add')
+          input.span5(name='admin', type='text', required)
+          br
+          input.btn.btn-success(type='submit', value='Add admin')
+
+      - if (currentUrl == '/challenges/' + challenge.link + '/users')
+        h2 Participants
+        - if (people.length != 0)
+          - each p in people
+            .ch-user
+              .ch-avatar
+                img(src=p.avatar_url, width='100px', max-height='100px')
+              a(href='/#{p.user_name}')= p.user_name
+          .spacer
+          .ch-user-sum= people.length + " users"
+        - else
+          | No users joined challenge until now.
+        .spacer
+        .spacer
+
+
+    .right
+      .submenu
+        - if (currentUrl == "/challenges/" + challenge.link)
+          .submenu-item-selected About
+        - else
+          a(href='/challenges/' + challenge.link)
+            .submenu-item About
+        - if (currentUrl == "/challenges/" + challenge.link + '/pulls')
+          .submenu-item-selected Commits
+        - else
+          a(href='/challenges/' + challenge.link + '/pulls')
+            .submenu-item Commits
+        - if (currentUrl == "/challenges/" + challenge.link + '/users')
+          .submenu-item-selected Participants
+        - else
+          a(href='/challenges/' + challenge.link + '/users')
+            .submenu-item Participants
+        - if (user && user.admin)
+          - if (currentUrl == '/challenges/' + challenge.link + '/admin')
+            .submenu-item-selected Admin
+          - else
+            a(href='/challenges/' + challenge.link + '/admin')
+              .submenu-item Admin
+
+  .spacer

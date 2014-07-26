@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1= title
+
+  form(method='post', action='/admin/challenge_add')
+    label Name
+    input.span5(name='name', type='text', required)
+
+    label Description
+    textarea.span7(name='description', id='no_resize_textarea', rows='4')
+
+    label Admins (space separated)
+    input.span5(name='admins', type='text', required)
+
+    br
+    input.btn.btn-success(type='submit', value='Add Challenge')

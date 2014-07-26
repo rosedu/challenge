@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  - if(!everyauth.loggedIn && tab)
+    .announcement
+      .announcement-inner
+        - if (tab == "join_team")
+          | Please log in to join a team and start developing. You just need a
+          | GitHub account.
+        - if (tab == "fav")
+          | To keep a list of your favorite ideas, log in. We'll do the rest.
+        - if (tab == "back")
+          | Thank you for your feedback. We will get back to you shortly.
+          | Enjoy Github-connect.
+    .spacer
+    .spacer
+
+  - if (!everyauth.loggedIn)
+    - if (status == 'test')
+      .card.css3-shadow
+        h3 Login is disabled for the moment.
+        p We will come back shortly.
+
+    - else
+      h1= title
+      .card.css3-shadow
+        .login-left
+          | You can do a lot of things on our site, but loging in will further
+          | enchance your experience and give you access to many more options.
+          br
+          br
+          a.btn(href="/auth/github") Login with github
+
+        .login-right
+          | GitHub is a great tool. Create an account right now to get access to
+          | all its features and also get in the game with us right away.
+          br
+          br
+          a.btn(href="http://www.github.com") Create new account
+
+    .spacer
+
+  h3 Why join Github-connect:
+  p
+    | * get points for your contributions and compare your score against your friends
+    br
+    | * bring your project ideas against our community and see how they grow
+    br
+    | * get inspired by other ideas and implement new features into your apps
+    br
+    | * easily find projects that need your help
+    br
+    | * socialize and code
+
+  .spacer

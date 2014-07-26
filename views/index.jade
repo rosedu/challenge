@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  .card-blank
+    .blank-title ROSEdu Challenge
+    .blank-text
+      | Contribuie la proiecte open-source si castiga premii.
+      br
+      br
+      h4
+        a(href='/login')= "Login "
+        | doar cu contul de GitHub.
+
+  .card.css3-shadow
+    .card-left
+      | Mereu ti-ai dorit sa aduci contributii unui proiect mare ? Temele de la
+      | facultate sunt prea plictisitoare ? Competitia a inceput ! Intra in joc
+      | si castiga premii.
+    .card-right.card-ideas
+      | Incepe acum !
+      br
+      br
+      br
+      a.btn.btn-success(href="/challenges", style="color:white") Start
+
+  .stats
+    .stats-field
+      .stats-field-number
+        = commits
+      | commits
+    .stats-field
+      .stats-field-number
+        = users
+      | registered users
+    .stats-field
+      .stats-field-number
+        = lines
+      | lines of code

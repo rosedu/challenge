@@ -1,0 +1,19 @@
+{
+  "name": "rosedu-challenge",
+  "version": "0.0.1",
+  "dependencies": {
+    "connect": "2.19.6",
+    "cron": "1.0.4",
+    "everyauth": "0.4.6",
+    "express": "3.10.5",
+    "jade": "0.31.2",
+    "markdown": "0.5.x",
+    "mocha": "1.20.1",
+    "mongoose": "3.2.0",
+    "nodemailer": "~0.6.3"
+  },
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.2.x"
+  }
+}
