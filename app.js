@@ -93,6 +93,7 @@ app.get('/challenges/:ch/repo_remove', ensureAuth, challenge.repo_remove);
 app.get('/challenges/:ch/users', challenge.one);
 app.get('/challenges/:ch/pulls', challenge.one);
 app.get('/challenges/:ch/join', ensureAuth, challenge.join);
+app.get('/challenges/:ch/refresh', ensureAuth, challenge.refresh);
 
 
 var admin = require('./routes/admin.js');

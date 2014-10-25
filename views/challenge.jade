@@ -39,6 +39,8 @@ block content
         - if (user && user.admin)
           a(href='/challenges/' + challenge.link + '/admin')
             input.btn.btn-success(type='submit', value='Edit challenge')
+          a(href='/challenges/' + challenge.link + '/refresh')
+            input.btn.btn-success(type='submit', value='Refresh')
 
   #content
     .left

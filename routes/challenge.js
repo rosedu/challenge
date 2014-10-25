@@ -193,6 +193,19 @@ exports.join = function(req, res) {
 };
 
 /*
+Manually refresh challenges.
+*/
+exports.refresh = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    core.refresh_challenges();
+    res.redirect('/challenges/' + req.params.ch);
+  }
+};
+
+/*
 Add new admin to list.
 Only admins can add other admins.
 */
