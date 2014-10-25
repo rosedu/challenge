@@ -17,6 +17,7 @@ setup-rpm: package.json
 	npm config set registry http://registry.npmjs.org/
 	sudo npm install
 
+	sudo yum install -y mongo-org
 	NODE_ENV=development
 
 	mongod &
