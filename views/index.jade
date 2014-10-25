@@ -7,9 +7,12 @@ block content
       | Contribuie la proiecte open-source si castiga premii.
       br
       br
-      h4
-        a(href='/login')= "Login "
-        | cu GitHub.
+      - if (!everyauth.loggedIn)
+        h4
+          a(href='/login')= "Login "
+          | cu GitHub.
+
+
 
   .card.css3-shadow
     .card-left
