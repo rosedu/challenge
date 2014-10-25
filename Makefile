@@ -38,6 +38,9 @@ production:
 	@export NODE_ENV=production
 	nohup node app.js &> app.log
 
+deploy:
+	ssh challenge@projects.rosedu.org /home/challenge/deploy.sh
+
 db-export:
 	rm -rf rchallenge_db
 	mongod &

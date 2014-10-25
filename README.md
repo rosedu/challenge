@@ -5,7 +5,7 @@
 ### Easy install
 For a quick setup, just run **make setup** in the root directory.
 Then **make run** will start the db and app at
-[http://localhost:4000](http://localhost:4000).
+[http://localhost:3000](http://localhost:3000).
 
 ### Manual setup
 1. Install nodejs (preferably from own repo) and npm:
@@ -28,7 +28,7 @@ Then **make run** will start the db and app at
 5. Start mongod and import testing database:
 
         mongod &
-        mongorestore -d github-connect ghconnect_db/github-connect
+        mongorestore -d rosedu-challenge rchallenge_db/rosedu-challenge
 
 6. Run mongod and start the app. Then visit [http://localhost:3000](http://localhost:3000).
 
