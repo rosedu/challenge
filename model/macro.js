@@ -2,4 +2,4 @@ exports.CRON = {
     CHALLENGE: '00 00 02,17 * * *'
 }
 
-exports.SUPERUSER = ['cmarius02']
+exports.SUPERUSER = ['mariuscoto']

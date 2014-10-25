@@ -46,7 +46,7 @@ everyauth
 .appId(global.config.gh_clientId)
 .appSecret(global.config.gh_secret)
 .findOrCreateUser(core.login)
-.redirectPath('/login');
+.redirectPath('/');
 
 
 app.configure(function() {
@@ -122,6 +122,6 @@ function ensureSuper(req, res, next) {
 }
 
 // Launch server
-app.listen(process.env.PORT || 4000, function() {
-  console.log('Server listening on port 4000.');
+app.listen(process.env.PORT || 3000, function() {
+  console.log('Server listening on port 3000.');
 });

@@ -19,8 +19,12 @@ test:
 
 run:
 	@mongod &
-	@echo "Server running at localhost:4000"
+	@echo "Server running at localhost:3000"
 	@node app.js
+
+production:
+	@export NODE_ENV=production
+	nohup node app.js &> app.log
 
 db-export:
 	rm -rf rchallenge_db
