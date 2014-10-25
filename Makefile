@@ -12,6 +12,17 @@ setup: package.json
 	mongorestore -d rosedu-challenge rchallenge_db/rosedu-challenge
 	killall mongod
 
+setup-rpm: package.json
+	sudo yum install -y nodejs npm
+	npm config set registry http://registry.npmjs.org/
+	sudo npm install
+
+	NODE_ENV=development
+
+	mongod &
+	mongorestore -d rosedu-challenge rchallenge_db/rosedu-challenge
+	killall mongod
+
 test:
 	@for t in $$(ls tests); do \
 		./node_modules/.bin/mocha -R spec tests/$$t; \
