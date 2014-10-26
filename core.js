@@ -64,104 +64,6 @@ function addUser (source, sourceUser) {
   return user;
 }
 
-exports.get_followers = function (user_name, accessToken, notify) {
-  var options = {
-    host: "api.github.com",
-    path: "/users/" + user_name + "/followers?access_token=" + accessToken,
-    method: "GET",
-    headers: { "User-Agent": "github-connect" }
-  };
-
-  var request = https.request(options, function(response){
-    var body = '';
-    response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-    response.on("end", function(){
-      var json = JSON.parse(body);
-
-      if (notify) { // check old value
-        Users.findOne({user_name: user_name}, function(err, user) {
-          var msg, diff = user.followers_no - json.length;
-          if (diff > 0) msg = "lost " + diff;
-          else if (diff < 0) msg = -(diff) + " new";
-
-          // notify user only if we have some action going on
-          if (diff != 0) {
-            new Notifications({
-              src:    "",
-              dest:   user.user_name,
-              type:   "followers_no",
-              seen:   false,
-              date:   Date.now(),
-              link:   msg
-            }).save(function(err, todo, count ) {
-              if (err) console.log("[ERR] Notification not sent.");
-            });
-
-            var conditions = {user_name: user.user_name};
-            var update = {$set: {unread: true}};
-            Users.update(conditions, update).exec();
-          }
-        });
-      }
-
-      // update user info
-      var conditions = {user_name: user_name};
-      var update = {$set: {followers_no: json.length}};
-      Users.update(conditions, update).exec();
-    });
-  });
-  request.end();
-}
-
-exports.get_following = function (user_name, accessToken, notify) {
-  var options = {
-    host: "api.github.com",
-    path: "/users/" + user_name + "/following?access_token=" + accessToken,
-    method: "GET",
-    headers: { "User-Agent": "github-connect" }
-  };
-
-  var request = https.request(options, function(response){
-    var body = '';
-    response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-    response.on("end", function(){
-      var json = JSON.parse(body);
-
-      if (notify) { // check old value
-        Users.findOne({user_name: user_name}, function(err, user) {
-          var msg, diff = user.following_no - json.length;
-          if (diff > 0) msg = "lost " + diff;
-          else if (diff < 0) msg = -(diff) + " new";
-
-          // notify user only if we have some action going on
-          if (diff != 0) {
-            new Notifications({
-              src:    "",
-              dest:   user.user_name,
-              type:   "following_no",
-              seen:   false,
-              date:   Date.now(),
-              link:   msg
-            }).save(function(err, todo, count ) {
-              if (err) console.log("[ERR] Notification not sent.");
-            });
-
-            var conditions = {user_name: user.user_name};
-            var update = {$set: {unread: true}};
-            Users.update(conditions, update).exec();
-          }
-        });
-      }
-
-      // update user info
-      var conditions = {user_name: user_name};
-      var update = {$set: {following_no: json.length}};
-      Users.update(conditions, update).exec();
-    });
-  });
-  request.end();
-}
-
 
 exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
   sess.oauth = accessToken;
@@ -175,15 +77,15 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
       if (err) return handleError(err);
       if (user != null) {
         // update last_seen
-        var conditions = {user_name: usersByGhId[ghUser.id].github.login};
-        var update = {$set: {last_seen: Date.now()}};
+        var conditions = {'user_name': user.user_name};
+        var update = {$set: {
+          'last_seen': Date.now(),
+          'followers_no': usersByGhId[ghUser.id].github.followers,
+          'following_no': usersByGhId[ghUser.id].github.following
+        }};
         Users.update(conditions, update, function (err, num) {
           console.log("* User " + user.user_name + " logged in.");
         });
-        // update followers number and notify
-        module.exports.get_followers(user.user_name, accessToken, true);
-        // update following number and notify
-        module.exports.get_following(user.user_name, accessToken, true);
 
       } else {
         // send welcome notification
@@ -207,14 +109,10 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
           avatar_url:    usersByGhId[ghUser.id].github.avatar_url,
           location:      usersByGhId[ghUser.id].github.location,
           join_github:   usersByGhId[ghUser.id].github.created_at,
-          join_us:       Date.now(),
-          last_seen:     Date.now()
+          followers_no:  usersByGhId[ghUser.id].github.followers,
+          following_no:  usersByGhId[ghUser.id].github.following
         }).save (function (err, user, count) {
           console.log("* User " + user.user_name + " added.");
-          // update followers number
-          module.exports.get_followers(user.user_name, accessToken, false);
-          // update following number
-          module.exports.get_following(user.user_name, accessToken, false);
           // send welcome email
           module.exports.send_mail(user.user_email, 'welcome');
         });
