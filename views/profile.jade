@@ -43,6 +43,13 @@ block content
               a(href='/logout') Logout
 
     .profile-right
+      - if (currentUrl == '' && joined)
+        .profile-header Joined challenges
+        - each ch in challenges
+          - if (ch.joined)
+            .profile-item
+              a(href='/challenges/' + ch.link)= ch.name
+
       - if (currentUrl == 'notifications')
         .profile-notif
           .profile-header Your notifications

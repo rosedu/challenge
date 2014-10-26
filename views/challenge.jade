@@ -31,7 +31,7 @@ block content
         - else if (!user)
           a(href='/login')
             input.btn.btn-success(type='submit', value='Join challenge')
-        - else if (user && !user.joined && !user.admin)
+        - else if (user && !user.joined)
           a(href='/challenges/' + challenge.link + '/join')
             input.btn.btn-success(type='submit', value='Join challenge')
         - else
