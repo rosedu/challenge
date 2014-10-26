@@ -15,3 +15,11 @@ block content
 
     br
     input.btn.btn-success(type='submit', value='Add Challenge')
+
+  hr
+  h1 Registered users
+  - each u in users
+    br
+    a(href='/' + u.user_name)= u.user_name
+    br
+    = u.user_fullname + ' (' + u.user_email + ')'

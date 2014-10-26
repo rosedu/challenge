@@ -9,17 +9,23 @@ Add new challenge.
 */
 exports.index = function(req, res) {
 
+  var _self = {};
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-  Users.findOne({'user_id': uid}).exec(gotUser);
+  Users.find().exec(gotAll);
+
+  function gotAll(err, all) {
+    _self.users = all;
+    Users.findOne({'user_id': uid}).exec(gotUser);
+  }
 
   function gotUser(err, user) {
     res.render('admin', {
-      title: 'New challenge',
-      user: user
+      'title':  'New challenge',
+      'user':   user,
+      'users':  _self.users
     });
   }
-
 };
 
 /*
