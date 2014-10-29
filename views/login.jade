@@ -4,14 +4,9 @@ block content
   - if(!everyauth.loggedIn && tab)
     .announcement
       .announcement-inner
-        - if (tab == "join_team")
-          | Please log in to join a team and start developing. You just need a
-          | GitHub account.
-        - if (tab == "fav")
-          | To keep a list of your favorite ideas, log in. We'll do the rest.
         - if (tab == "back")
           | Thank you for your feedback. We will get back to you shortly.
-          | Enjoy Github-connect.
+          | Enjoy ROSEdu Challenge.
     .spacer
     .spacer
 
@@ -39,17 +34,4 @@ block content
           a.btn(href="http://www.github.com") Create new account
 
     .spacer
-
-  h3 Why join Github-connect:
-  p
-    | * get points for your contributions and compare your score against your friends
-    br
-    | * bring your project ideas against our community and see how they grow
-    br
-    | * get inspired by other ideas and implement new features into your apps
-    br
-    | * easily find projects that need your help
-    br
-    | * socialize and code
-
   .spacer
