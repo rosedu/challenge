@@ -52,6 +52,7 @@ everyauth
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.use(express.favicon("public/images/rc-logo.ico"));
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(express.cookieParser());
