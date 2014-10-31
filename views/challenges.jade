@@ -16,9 +16,10 @@ block content
       .card-ch-left
         h1
           a(href='/challenges/' + c.link)= c.name
-        h5= c.start
+        - if (c.start)
+          h5= "Starts: " + c.start.toString().substring(0,10)
         br
-        p= c.description
+        p!= c.description_mk
 
       .spacer
       .spacer

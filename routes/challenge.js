@@ -23,6 +23,11 @@ exports.index = function(req, res) {
   }
 
   function gotChallenges(err, ch) {
+    for (var r in ch) {
+      // Markdown description
+      ch[r].description_mk = markdown.toHTML(ch[r].description);
+    }
+
     res.render('challenges', {
       title:      "All challenges",
       user:       _self.user,
