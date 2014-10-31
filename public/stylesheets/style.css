@@ -706,6 +706,14 @@ a:hover {
     background-color: #F5F9FC;
 }
 
+.profile-repo-icon-forked {
+    width: 30px;
+    height: 40px;
+    float: left;
+    background-image: url('/images/icon-repo-forked.png');
+    background-repeat: no-repeat;
+}
+
 .profile-header {
     padding: 10px;
     background-image: linear-gradient(#FAFAFA, #EAEAEA);
