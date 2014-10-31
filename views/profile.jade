@@ -66,18 +66,10 @@ block content
                 = n.src + " commented on your "
                   a(href=n.link) project
                   = ", " + n.date_f + "."
-              - if (n.type == 'following_no')
-                = "You have " + n.link + " users following."
-              - if (n.type == 'followers_no')
-                = "You have " + n.link + " followers."
-              - if (n.type == 'watch_count')
-                = "Repo " + n.src + " " + n.link + " watcher(s). "
-              - if (n.type == 'fork_count')
-                = "Repo " + n.src + " " + n.link + " user fork(s). "
               - if (n.type == 'pull_accepted')
                 = "Repo " + n.src + " accepted your pull request."
               - if (n.type == 'welcome')
-                = "Welcome to Github-connect! Check out our "
+                = "Welcome to Challenges by ROSEdu! Check out our "
                   a(href=n.link) FAQ page
                   = " to get started."
 

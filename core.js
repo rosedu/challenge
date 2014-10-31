@@ -88,14 +88,12 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
         });
 
       } else {
-        // send welcome notification
+        // Send welcome notification
         new Notifications({
-          src:    null,
-          dest:   usersByGhId[ghUser.id].github.login,
-          type:   "welcome",
-          seen:   false,
-          date:   Date.now(),
-          link:   "/faq"
+          'src':    null,
+          'dest':   usersByGhId[ghUser.id].github.login,
+          'type':   "welcome",
+          'link':   "/faq"
         }).save(function(err, todo, count) {
           if (err) console.log("[ERR] Notification not sent.");
         });
