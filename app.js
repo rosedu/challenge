@@ -77,11 +77,7 @@ app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
 
 var profile = require('./routes/profile.js');
-app.get('/:user/repos', profile.repos)
-app.get('/:user/remove', ensureAuth, profile.remove)
-app.get('/:user/edit_profile', profile.edit_profile)
 app.get('/:user/notifications', profile.notifications)
-app.post('/profile/edit', ensureAuth, profile.edit);
 
 var challenge = require('./routes/challenge.js');
 app.get('/challenges', challenge.index);

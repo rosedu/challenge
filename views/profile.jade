@@ -8,39 +8,34 @@ block content
       .profile-avatar
         img(src=cuser.avatar_url)
 
-      - if (currentUrl == 'edit')
-          a(href='#', id='remove_account') Remove account
-      - else
-        .profile-name
-          b= cuser.user_fullname
-          br
-          a(href='http://www.github.com/' + cuser.user_name)= cuser.user_name
-        - if (cuser.location && (cuser.location_pub || cuser.user_name == user.user_name))
-          .profile-info.profile-info-location
-            = cuser.location
-        - if (cuser.user_email && (cuser.email_pub || cuser.user_name == user.user_name))
-          .profile-info.profile-info-email
-            = cuser.user_email
-        - if (cuser.join_us)
-          .profile-info.profile-info-date Joined on
-            = " " + (cuser.join_us).toString().substring(4, 16)
+      .profile-name
+        b= cuser.user_fullname
+        br
+        a(href='http://www.github.com/' + cuser.user_name)= cuser.user_name
+      - if (cuser.location && (cuser.location_pub || cuser.user_name == user.user_name))
+        .profile-info.profile-info-location
+          = cuser.location
+      - if (cuser.user_email && (cuser.email_pub || cuser.user_name == user.user_name))
+        .profile-info.profile-info-email
+          = cuser.user_email
+      - if (cuser.join_us)
+        .profile-info.profile-info-date Joined on
+          = " " + (cuser.join_us).toString().substring(4, 16)
 
-        .profile-numbers
-          .profile-num
-            p= cuser.followers_no
-            h5 followers
-          .profile-num
-            p= cuser.following_no
-            h5 following
+      .profile-numbers
+        .profile-num
+          p= cuser.followers_no
+          h5 followers
+        .profile-num
+          p= cuser.following_no
+          h5 following
 
-        .profile-links
-          - if (everyauth.loggedIn)
-            - if (user.user_name == cuser.user_name)
-              a(href='/' + user.user_name + '/notifications') Notifications
-              br
-              a(href='/' + user.user_name + '/edit') Edit profile
-              br
-              a(href='/logout') Logout
+      .profile-links
+        - if (everyauth.loggedIn)
+          - if (user.user_name == cuser.user_name)
+            a(href='/' + user.user_name + '/notifications') Notifications
+            br
+            a(href='/logout') Logout
 
     .profile-right
       - if (currentUrl == '' && joined)
@@ -73,33 +68,5 @@ block content
                   a(href=n.link) FAQ page
                   = " to get started."
 
-      - if (currentUrl == 'edit_profile')
-        .profile-edit
-          h2 Edit your profile
-          br
-          form(method='post', action='/profile/edit')
-            label Full name
-            input.span5(name='fullname', type='text', value= cuser.user_fullname, required)
-            label Location
-            input.span5(name='location', type='text', value= cuser.location)
-            br
-            - if (cuser.location_pub)
-              input(name='location_pub', type='checkbox', checked)
-            - else
-              input(name='location_pub', type='checkbox')
-            = " Make my location public."
-            br
-            br
-            label Email
-            input.span5(name='email', type='email', value= cuser.user_email, required)
-            br
-            - if (cuser.email_pub)
-              input(name='email_pub', type='checkbox', checked)
-            - else
-              input(name='email_pub', type='checkbox')
-            = " Let others see my email address."
-            br
-            br
-            input.btn.btn-success(id='sub', type='submit', value='Update')
   .spacer
   .spacer
