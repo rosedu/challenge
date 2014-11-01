@@ -6,17 +6,17 @@ block content
     .spacer
 
     .left
-      h4 Asteptam mereu observatiile si comentariile voastre.
+      h4 We appreciate your feedback and we will try to answer your questions ASAP.
       br
       br
 
       form(method='post', action='/contact')
-        label Email
+        label Your email address
         - if (!everyauth.loggedIn || !user.user_email)
           input.span5(name='email', type='text', required)
         - else
           input.span5(name='email', type='text', required, value='#{user.user_email}')
-        label Mesaj
+        label Message
         textarea.span7(name='msg', rows="10", required)
         br
         input.btn.btn-success(type='submit', value='Trimite')

@@ -26,12 +26,12 @@ html
 
         #controls
           - if (!everyauth.loggedIn)
-            a(href="/login") Login
+            a(href="/login") Log in
           - else
             a(href="/" + user.user_name)= " " + user.user_name + " "
             a(href="/logout")
               #logout
-              
+
             a(href="/" + user.user_name + "/notifications")
               .notif-box
                 - if (user.unread)
