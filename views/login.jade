@@ -4,6 +4,8 @@ block content
   - if(!everyauth.loggedIn && tab)
     .announcement
       .announcement-inner
+        - if (tab == "join")
+          | Before joining a challenge, you need to log in.
         - if (tab == "back")
           | Thank you for your feedback. We will get back to you shortly.
           | Enjoy ROSEdu Challenge.

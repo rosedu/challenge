@@ -29,7 +29,7 @@ block content
         - if (challenge.status == 'closed')
           h4 This challenge has ended.
         - else if (!user)
-          a(href='/login')
+          a(href='/login?rf=join')
             input.btn.btn-success(type='submit', value='Join challenge')
         - else if (user && !user.joined)
           a(href='/challenges/' + challenge.link + '/join')
