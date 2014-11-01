@@ -15,6 +15,10 @@ app.configure('production', function(){
   global.config.gh_clientId = process.env.clientId;
   global.config.gh_secret = process.env.secret;
   global.config.redis_secret = process.env.redis_secret;
+
+  global.config.mail_user = process.env.mail_user;
+  global.config.mail_pass = process.env.mail_pass;
+
   global.config.status = 'prod';
 });
 

@@ -28,15 +28,15 @@ exports.send_mail = function (destination, type, body) {
       var mailOpt = {};
 
       if (type == 'welcome') {
-        mailOpt['from']    = "welcome@gconnect.com";
+        mailOpt['from']    = "challenge@rosedu.org";
         mailOpt['to']      = destination,
-        mailOpt['subject'] = 'Welcome to Github-connect',
+        mailOpt['subject'] = 'Welcome to Challenge by ROSEdu',
         mailOpt['text']    = '',
         mailOpt['html']    = html;
       } else if (type == 'feedback') {
-        mailOpt['from']    = "welcome@gconnect.com";
-        mailOpt['to']      = 'cmarius02@gmail.com',
-        mailOpt['subject'] = 'Feedback Github-connect: ' + body.email,
+        mailOpt['from']    = "challenge@rosedu.org";
+        mailOpt['to']      = 'challenge@rosedu.org',
+        mailOpt['subject'] = 'Feedback: ' + body.email,
         mailOpt['text']    = body.msg
       }
 
