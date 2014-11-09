@@ -204,12 +204,12 @@ exports.refresh_challenges = function() {
                 else merge_date = new Date(pulls[p].merged_at);
 
                 var update = {$addToSet: { 'pulls': {
-                  repo:      ch.repos[r],
-                  auth:      pulls[p].user.login,
-                  url:       pulls[p].html_url,
-                  title:     pulls[p].title,
-                  created:   new Date(pulls[p].created_at),
-                  merged:    merge_date
+                  'repo':      pulls[p].base.repo.full_name,
+                  'auth':      pulls[p].user.login,
+                  'url':       pulls[p].html_url,
+                  'title':     pulls[p].title,
+                  'created':   new Date(pulls[p].created_at),
+                  'merged':    merge_date
                 }}};
 
                 Challenges.update({'link': ch.link}, update).exec();
