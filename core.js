@@ -204,7 +204,7 @@ exports.refresh_challenges = function() {
                 else merge_date = new Date(pulls[p].merged_at);
 
                 var update = {$addToSet: { 'pulls': {
-                  repo:      ch.repos[1],
+                  repo:      ch.repos[r],
                   auth:      pulls[p].user.login,
                   url:       pulls[p].html_url,
                   title:     pulls[p].title,
