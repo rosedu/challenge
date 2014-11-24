@@ -274,3 +274,28 @@ exports.repo_remove = function(req, res) {
     });
   }
 };
+
+/*
+Send email to all users in challenge.
+Only admins can do this.
+*/
+exports.email_users = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    Users.find({'user_name': {$in: ch.users}}).select('user_email').exec(gotUsers);
+
+    res.redirect('/challenges/' + req.params.ch + '/admin');
+  }
+
+  function gotUsers(err, users) {
+    for (var i=0; i<users.length; i++) {
+      core.send_mail(users[i].user_email, 'challenge', req.body.email_msg, req.body.email_sub)
+    }
+  }
+};

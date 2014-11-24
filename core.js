@@ -12,7 +12,7 @@ global.usersById = {};
 var usersByGhId = {};
 
 
-exports.send_mail = function (destination, type, body) {
+exports.send_mail = function (destination, type, body, subject) {
   var nodemailer = require("nodemailer");
 
   // create reusable transport method (opens pool of SMTP connections)
@@ -28,16 +28,21 @@ exports.send_mail = function (destination, type, body) {
       var mailOpt = {};
 
       if (type == 'welcome') {
-        mailOpt['from']    = 'challenge@lists.rosedu.org';
+        mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
         mailOpt['to']      = destination,
         mailOpt['subject'] = 'Welcome to Challenge by ROSEdu',
         mailOpt['text']    = '',
         mailOpt['html']    = html;
       } else if (type == 'feedback') {
-        mailOpt['from']    = 'challenge@lists.rosedu.org';
+        mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
         mailOpt['to']      = 'challenge@lists.rosedu.org',
         mailOpt['subject'] = 'Feedback: ' + body.email,
         mailOpt['text']    = body.msg
+      } else if (type == 'challenge') {
+        mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
+        mailOpt['to']      = destination,
+        mailOpt['subject'] = subject,
+        mailOpt['text']    = body
       }
 
       // send mail with defined transport object

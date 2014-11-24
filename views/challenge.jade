@@ -181,6 +181,19 @@ block content
           br
           input.btn.btn-success(type='submit', value='Add admin')
 
+        .spacer
+        h2 Send email
+        | Send email to all participants in challenge.
+        form(method='post', action='/challenges/' + challenge.link + '/email_users')
+          br
+          label Subject
+          input.span5(name='email_sub', type='text', required)
+          br
+          label Message
+          textarea.span9(name='email_msg', rows='6', required)
+          br
+          input.btn.btn-success(type='submit', value='Send')
+
       - if (currentUrl == '/challenges/' + challenge.link + '/users')
         h2 Participants
         - if (people.length != 0)
