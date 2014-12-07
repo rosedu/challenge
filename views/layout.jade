@@ -56,6 +56,11 @@ html
         #menu-footer
           ul
             li
+              - each suser in settings.admin
+                - if (everyauth.loggedIn && suser == user.user_name)
+                  a(href="/admin") Admin
+
+            li
               a(href="/faq") FAQ
             li
               a(href="/contact") Contact

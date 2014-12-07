@@ -54,6 +54,7 @@ everyauth
 
 
 app.configure(function() {
+  app.set('admin', MACRO.SUPERUSER);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon(__dirname + "/public/images/rc-logo.ico"));
