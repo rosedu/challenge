@@ -183,7 +183,7 @@ exports.refresh_challenges = function() {
           method: "GET",
           headers: { "User-Agent": "github-connect" }
         };
-
+        console.log("repo", "/repos/" + ch.repos[r] + "/pulls?state=all")
         var request = https.request(options, function(response){
           var body = '';
           response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
@@ -208,16 +208,44 @@ exports.refresh_challenges = function() {
                 if (!pulls[p].merged_at) merge_date = null;
                 else merge_date = new Date(pulls[p].merged_at);
 
-                var update = {$addToSet: { 'pulls': {
-                  'repo':      pulls[p].base.repo.full_name,
-                  'auth':      pulls[p].user.login,
-                  'url':       pulls[p].html_url,
-                  'title':     pulls[p].title,
-                  'created':   new Date(pulls[p].created_at),
-                  'merged':    merge_date
-                }}};
+                var pull_options = {
+                  host: "api.github.com",
+                  path: pulls[p].url,
+                  method: "GET",
+                  headers: { "User-Agent": "github-connect" }
+                 };  
+                 var util = require('util'); 
 
-                Challenges.update({'link': ch.link}, update).exec();
+                 var pull_request = https.request(pull_options, function(response){
+                    //console.log(util.inspect(response, false, null));
+                    date = '';
+                    response.on("data", function(chunk){ date+=chunk.toString("utf8"); });
+                    response.on("end", function(){
+                    body = '';
+                    try{
+                      body = JSON.parse(date);
+                    }
+                    catch(e)
+                    {
+                       console.log(e);
+                    }
+                
+                    var update = {$addToSet: { 'pulls': {
+                      'repo':         pulls[p].base.repo.full_name,
+                      'auth':         pulls[p].user.login,
+                      'url':          pulls[p].html_url,
+                      'title':        pulls[p].title,
+                      'created':      new Date(pulls[p].created_at),
+                      'merged':       merge_date,
+                      'removed_lines':body.deletions,
+                      'added_lines':  body.additions,
+                    }}};
+
+
+                    Challenges.update({'link': ch.link}, update).exec();
+                  })
+                });
+                pull_request.end();
               }
             }
 

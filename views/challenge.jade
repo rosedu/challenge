@@ -93,6 +93,9 @@ block content
               .ch-pull-info= "#" + p.repo
               br
               a(href='#{p.url}')= p.title
+              br
+              span(class="delete")= "-"+p.removed_lines 
+              span(class="add")= "   +"+p.added_lines
               - if (p.merged)
                 .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
               - else

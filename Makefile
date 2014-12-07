@@ -34,6 +34,10 @@ run:
 	@echo "Server running at localhost:3000"
 	@node app.js
 
+debug:
+	@mongod &
+	@echo "Server running at localhost:3000"
+	@node debug app.js
 production:
 	@export NODE_ENV=production
 	nohup node app.js &> app.log

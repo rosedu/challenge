@@ -51,7 +51,9 @@ var Pulls = new Schema({
   url:          {type: String, default: null},
   title:        {type: String, default: null},
   created:      {type: Date, default: null},
-  merged:       {type: Date, default: null}
+  merged:       {type: Date, default: null},
+  removed_lines:{type: Number},
+  added_lines:  {type: Number}, 
 });
 
 mongoose.model( 'Users', Users );
