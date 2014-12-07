@@ -89,7 +89,10 @@ block content
         - if (pulls.length != 0)
           - each p in pulls
             .ch-pull
-              a(href='/#{p.auth}')= p.auth
+              a(href='/#{p.auth}')= p.auth 
+              - each suser in settings.admin
+                - if (everyauth.loggedIn && suser == user.user_name)
+                    a(href='/challenge/' + challenge.link + '/hide_pr?id=' + p._id)  -   Hide
               .ch-pull-info= "#" + p.repo
               br
               a(href='#{p.url}')= p.title
