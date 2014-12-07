@@ -94,8 +94,8 @@ block content
               br
               a(href='#{p.url}')= p.title
               br
-              span(class="delete")= "-"+p.removed_lines 
               span(class="add")= "   +"+p.added_lines
+              span(class="remove")= "   -"+p.removed_lines 
               - if (p.merged)
                 .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
               - else

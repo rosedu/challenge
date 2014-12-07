@@ -183,7 +183,6 @@ exports.refresh_challenges = function() {
           method: "GET",
           headers: { "User-Agent": "github-connect" }
         };
-        console.log("repo", "/repos/" + ch.repos[r] + "/pulls?state=all")
         var request = https.request(options, function(response){
           var body = '';
           response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
@@ -217,11 +216,10 @@ exports.refresh_challenges = function() {
                  var util = require('util'); 
 
                  var pull_request = https.request(pull_options, function(response){
-                    //console.log(util.inspect(response, false, null));
                     date = '';
                     response.on("data", function(chunk){ date+=chunk.toString("utf8"); });
                     response.on("end", function(){
-                    body = '';
+                    body = new Object();
                     try{
                       body = JSON.parse(date);
                     }
@@ -229,7 +227,7 @@ exports.refresh_challenges = function() {
                     {
                        console.log(e);
                     }
-                
+                    console.log(typeof(body));
                     var update = {$addToSet: { 'pulls': {
                       'repo':         pulls[p].base.repo.full_name,
                       'auth':         pulls[p].user.login,
