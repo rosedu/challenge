@@ -35,10 +35,27 @@ exports.index = function(req, res) {
     })
   };
 };
-
 /*
 Single challenge page.
 */
+
+exports.commit_add = function(req, res) {
+
+  pull = Pulls({
+    repo:  req.body.commit_repo,
+    auth:  req.body.user_name,
+    title: req.body.commit_descr,
+    url:   req.body.commit_link,
+    merged: Date.now(),
+    created: Date.now()
+  })
+
+  Challenges.update({name: req.params.ch}, {$push: { pulls: pull }}).exec(function(err, count) {
+    console.log(count)
+  })
+  res.redirect('/challenges/' + req.params.ch + '/pulls')
+};
+
 exports.one = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
@@ -304,3 +321,4 @@ exports.email_users = function(req, res) {
     }
   }
 };
+

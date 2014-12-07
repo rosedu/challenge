@@ -200,6 +200,26 @@ block content
           br
           input.btn.btn-success(type='submit', value='Send')
 
+        .spacer
+        h2 Add commits
+        | Manually add commits
+        form(method='post', action='/challenges/' + challenge.link + '/commit_add')
+          br
+          label Repo
+          input.span5(name='commit_repo', type='text' , required)
+          br
+          label User name
+          input.span5(name='user_name' , type='text' , required)
+          br
+          label Commit description
+          input.span5(name='commit_descr' , type='text' , required)
+          br
+          label Link
+          input.span5(name='commit_link', type=text, required)
+          br
+          br
+          input.btn.btn-success(type='submit', value='Send')
+
       - if (currentUrl == '/challenges/' + challenge.link + '/users')
         h2 Participants
         - if (people.length != 0)
