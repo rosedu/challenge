@@ -51,6 +51,6 @@ This is a list of the modules we use (package.json):
 Use package.json to install them all:
   
         npm install package.json
-
+ 
 
 ### Happy coding !
