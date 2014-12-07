@@ -52,6 +52,8 @@ block content
               .profile-repo-icon-forked
               .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+              br
+              a(href='http://github.com/' + challenge.mentors[r], target="_blank")= "Mentor: " + challenge.mentors[r]
           .ch-pull-info= "* Fork the project and contribute now."
         - else
           p There are no repos set for this challenge.
@@ -147,7 +149,11 @@ block content
           label Add repository (format: user/repo)
           input.span5(name='repos', type='text')
           p To add more, space separe items.
-
+          
+          label Add Mentor (format: user)
+          input.span5(name='mentors', type='text')
+          p To add more, space separe items.
+          
           label About project/repo
           textarea.span7(name='about', rows='4')= challenge.about
           p *Use markdown to style content.
