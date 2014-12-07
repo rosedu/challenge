@@ -35,7 +35,7 @@ exports.send_mail = function (destination, type, body, subject) {
         mailOpt['html']    = html;
       } else if (type == 'feedback') {
         mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
-        mailOpt['to']      = 'challenge@lists.rosedu.org',
+        mailOpt['to']      =  destination,
         mailOpt['subject'] = 'Feedback: ' + body.email,
         mailOpt['text']    = body.msg
       } else if (type == 'challenge') {

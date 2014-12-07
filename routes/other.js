@@ -98,7 +98,7 @@ Sends email to owner and redirects to login page with message.
 */
 exports.feedback = function(req, res) {
   if (req.body.email && req.body.msg) {
-    core.send_mail(null, 'feedback', req.body);
+    core.send_mail('challenge@lists.rosedu.org', 'feedback', req.body);
     res.redirect('/login?rf=back');
 
   } else {
