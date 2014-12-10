@@ -2,6 +2,7 @@ var MACRO = require('./model/macro.js');
 var mongoose = require('mongoose');
 var https = require('https');
 var fs = require('fs');
+var url = require('url');
 
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
@@ -189,7 +190,12 @@ exports.refresh_challenges = function() {
           response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
           response.on("end", function(){
             var pulls = JSON.parse(body);
-
+            // get details about the number of modified files
+            // lines inserted and lines deleted
+            var files_modified = 0,
+                lines_inserted = 0,
+                lines_removed = 0;    
+        
             // Log errors
             if (pulls.message)
               console.log("[ERR] " + pulls.message + " - " + options.path
@@ -198,6 +204,48 @@ exports.refresh_challenges = function() {
             for (var p in pulls) {
               // Accept only pulls created after challenge start date, before end
               // date and only from registered users
+              if(pulls[p].patch_url) {
+                var patch_url = pulls[p].patch_url;
+                var patch_url_host = url.parse(patch_url, true).host;
+                var patch_url_path = url.parse(patch_url, true).pathname;
+              
+                var patch_options = {
+                  host: patch_url_host,
+                  path: patch_url_path,
+                  method: "GET",
+                  headers: { "User-Agent": "github-connect" }
+                };
+
+                var patch_request = https.request(patch_options, function(response){
+                  var patch_body = '';
+
+                  response.on("data", function(chunk){patch_body+=chunk.toString("utf8"); });
+                  response.on("end", function(){
+                    var patch_info = patch_body.match(/[0-9]+/g);
+
+                    files_modified = patch_info[0];
+                    lines_inserted = patch_info[1];
+                    lines_removed = patch_info[2];
+                    var update = {$addToSet: { 'pulls': {
+                      'repo':           pulls[p].base.repo.full_name,
+                      'auth':           pulls[p].user.login,
+                      'url':            pulls[p].html_url,
+                      'title':          pulls[p].title,
+                      'created':        new Date(pulls[p].created_at),
+                      'merged':         merge_date,
+                      'files_changed':  files_modified,
+                      'lines_inserted': lines_inserted,
+                      'lines_removed':  lines_removed
+                    }}};
+
+                    Challenges.update({'link': ch.link}, update).exec();      
+                });
+
+              });
+              patch_request.end();
+
+            }
+
               if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
                   new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
                   ch.users.indexOf(pulls[p].user.login) > -1) {
@@ -209,12 +257,15 @@ exports.refresh_challenges = function() {
                 else merge_date = new Date(pulls[p].merged_at);
 
                 var update = {$addToSet: { 'pulls': {
-                  'repo':      pulls[p].base.repo.full_name,
-                  'auth':      pulls[p].user.login,
-                  'url':       pulls[p].html_url,
-                  'title':     pulls[p].title,
-                  'created':   new Date(pulls[p].created_at),
-                  'merged':    merge_date
+                  'repo':           pulls[p].base.repo.full_name,
+                  'auth':           pulls[p].user.login,
+                  'url':            pulls[p].html_url,
+                  'title':          pulls[p].title,
+                  'created':        new Date(pulls[p].created_at),
+                  'merged':         merge_date,
+                  'files_changed':  files_modified,
+                  'lines_inserted': lines_inserted,
+                  'lines_removed':  lines_removed
                 }}};
 
                 Challenges.update({'link': ch.link}, update).exec();
