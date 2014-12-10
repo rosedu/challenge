@@ -15,7 +15,7 @@ var Users = new Schema({
   join_github:     {type: String, default: Date.now},
   join_us:         {type: Date, default: Date.now},
   last_seen:       {type: Date, default: Date.now},
-  unread:          {type: Boolean, default: false},
+  unread:          {type: Boolean, default: false}
 });
 
 var Notifications = new Schema({
@@ -46,12 +46,15 @@ var Challenges = new Schema({
 });
 
 var Pulls = new Schema({
-  repo:         String,
-  auth:         String,
-  url:          {type: String, default: null},
-  title:        {type: String, default: null},
-  created:      {type: Date, default: null},
-  merged:       {type: Date, default: null}
+  repo:           String,
+  auth:           String,
+  url:            {type: String, default: null},
+  title:          {type: String, default: null},
+  created:        {type: Date, default: null},
+  merged:         {type: Date, default: null},
+  lines_inserted: {type: Number, default: 0},
+  lines_removed:  {type: Number, default: 0},
+  files_changed:  {type: Number, default: 0}
 });
 
 mongoose.model( 'Users', Users );

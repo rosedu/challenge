@@ -50,7 +50,7 @@ block content
           - for (var r=0; r<challenge.repos.length; r++)
             .ch-repo
               .profile-repo-icon-forked
-              .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
+              .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]   
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
           .ch-pull-info= "* Fork the project and contribute now."
         - else
@@ -97,6 +97,10 @@ block content
                 .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
               - else
                 .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+              p Commmit info:
+                | files changed:  #{p.files_changed}
+                | lines inserted: #{p.lines_inserted}
+                | lines removed:  #{p.lines_removed}
         - else
           p There are no pull requests created yet.
         .spacer
@@ -118,7 +122,7 @@ block content
               .ch-pull-info
                 a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
-              = " -- " + challenge.created_no[r] + " created, " + challenge.merged_no[r] + " merged"
+              = " -- " + challenge.created_no[r] + " created, " + challenge.merged_no[r] + " merged" 
         - else
           p There are no repos added. Use the form below to get started.
 
