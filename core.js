@@ -2,6 +2,7 @@ var MACRO = require('./model/macro.js');
 var mongoose = require('mongoose');
 var https = require('https');
 var fs = require('fs');
+var url = require('url');
 
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
@@ -156,6 +157,85 @@ exports.get_time_from = function (then) {
   }
 }
 
+var number_of_requests = 0;
+
+function create_patch_request(ch, pull) {
+		var patch_url = pull.patch_url;
+		var patch_url_host = url.parse(patch_url, true).host;
+		var patch_url_path = url.parse(patch_url, true).pathname;
+	
+		var patch_options = {
+		  host: patch_url_host,
+		  path: patch_url_path,
+		  method: "GET",
+		  headers: { "User-Agent": "github-connect" }
+		};
+
+		var patch_request = https.request(patch_options, function(response) {
+			var patch_body = '';
+			response.on("data", function(chunk){ patch_body+=chunk.toString("utf8"); });
+			response.on("end", function() {
+				var files_changed = 0;
+				var lines_inserted = 0;
+				var lines_removed = 0;
+				var temp;
+				
+				
+
+				if((temp = patch_body.match(/\d+ file[s]? changed/g))) {
+					/* there might be multiple patch parts */	
+					/* must iterate over each one and sum values */
+					for(t in temp) {
+						files_changed += parseInt(temp[t].match(/\d+/));
+					}
+				}
+
+				if((temp = patch_body.match(/\d+ insertion[s]?/g))) {
+					/* there might be multiple patch parts */	
+					/* must iterate over each one and sum values */
+					for(t in temp) {
+						lines_inserted += parseInt(temp[t].match(/\d+/));
+					}
+				}
+			
+				if((temp = patch_body.match(/\d+ deletion[s]?/g))) {
+					/* there might be multiple patch parts */	
+					/* must iterate over each one and sum values */
+					for(t in temp) {
+						lines_removed += parseInt(temp[t].match(/\d+/));
+					}
+				}
+	
+				// Check if merge date exists
+				var merge_date;
+
+				if (!pull.merged_at) merge_date = null;
+				else merge_date = new Date(pull.merged_at);
+
+				var update = {$addToSet: { 'pulls': {
+				  'repo':      		pull.base.repo.full_name,
+				  'auth':      		pull.user.login,
+				  'url':       		pull.html_url,
+				  'title':     		pull.title,
+				  'created':   		new Date(pull.created_at),
+				  'merged':    		merge_date,
+				  'lines_inserted': lines_inserted,
+				  'lines_removed': 	lines_removed,
+				  'files_changed': 	files_changed
+				}}};
+
+				Challenges.update({'link': ch.link}, update).exec();
+				number_of_requests = number_of_requests - 1;
+				if(number_of_requests <= 0) {
+					Challenges.update({'link' : ch.link}, {'updating': false}).exec();
+				}
+ 
+			});
+
+		});
+		patch_request.end();
+}
+
 /*
 Refresh all repos from all challeneges that are active ('live').
 */
@@ -171,7 +251,7 @@ exports.refresh_challenges = function() {
       var ch = all[c];
 
       // Update last refresh date
-      var update = {$set: { 'refresh': Date.now()}};
+      var update = {$set: { 'refresh': Date.now(), 'updating': true, 'pulls': []}};
       Challenges.update({'link': ch.link}, update).exec();
 
       //New request for each repo of challenge
@@ -196,34 +276,24 @@ exports.refresh_challenges = function() {
                 + " (" + pulls.documentation_url + ")");
 
             for (var p in pulls) {
+
               // Accept only pulls created after challenge start date, before end
               // date and only from registered users
               if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
                   new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
                   ch.users.indexOf(pulls[p].user.login) > -1) {
 
-                // Check if merge date exists
-                var merge_date;
-
-                if (!pulls[p].merged_at) merge_date = null;
-                else merge_date = new Date(pulls[p].merged_at);
-
-                var update = {$addToSet: { 'pulls': {
-                  'repo':      pulls[p].base.repo.full_name,
-                  'auth':      pulls[p].user.login,
-                  'url':       pulls[p].html_url,
-                  'title':     pulls[p].title,
-                  'created':   new Date(pulls[p].created_at),
-                  'merged':    merge_date
-                }}};
-
-                Challenges.update({'link': ch.link}, update).exec();
+				number_of_requests = number_of_requests + 1;
+				create_patch_request(ch, pulls[p]);	
+                
               }
             }
 
           });
+
         });
         request.end();
+
       }
     }
   }
