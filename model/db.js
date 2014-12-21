@@ -43,15 +43,19 @@ var Challenges = new Schema({
   users:        {type:[String], default: []},
   admins:       [String],
   pulls:        [Pulls],
+  updating:		{type: Boolean, default: false}
 });
 
 var Pulls = new Schema({
-  repo:         String,
-  auth:         String,
-  url:          {type: String, default: null},
-  title:        {type: String, default: null},
-  created:      {type: Date, default: null},
-  merged:       {type: Date, default: null}
+  repo:         	String,
+  auth:         	String,
+  url:          	{type: String, default: null},
+  title:        	{type: String, default: null},
+  created:      	{type: Date, default: null},
+  merged:       	{type: Date, default: null},
+  lines_inserted: 	{type: Number, default: 0},
+  lines_removed: 	{type: Number, default: 0},
+  files_changes:	{type: Number, default: 0}
 });
 
 mongoose.model( 'Users', Users );

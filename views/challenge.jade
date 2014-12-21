@@ -86,7 +86,7 @@ block content
 
       - if (currentUrl == '/challenges/' + challenge.link + '/pulls')
         h2 Pull requests
-        - if (pulls.length != 0)
+        - if (pulls.length != 0 && challenge.updating == false)
           - each p in pulls
             .ch-pull
               a(href='/#{p.auth}')= p.auth
@@ -97,6 +97,15 @@ block content
                 .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
               - else
                 .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+              p 
+                = "Files changed: " + p.files_changed
+              p 
+                = "Lines inserted: " + p.lines_inserted
+              p 
+                = "Lines removed: " + p.lines_removed
+
+        - else if (challenge.updating == true)
+          p Loading...
         - else
           p There are no pull requests created yet.
         .spacer
