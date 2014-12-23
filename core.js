@@ -35,7 +35,7 @@ exports.send_mail = function (destination, type, body, subject) {
         mailOpt['html']    = html;
       } else if (type == 'feedback') {
         mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
-        mailOpt['to']      = 'challenge@lists.rosedu.org',
+        mailOpt['to']      =  destination,
         mailOpt['subject'] = 'Feedback: ' + body.email,
         mailOpt['text']    = body.msg
       } else if (type == 'challenge') {
@@ -183,7 +183,6 @@ exports.refresh_challenges = function() {
           method: "GET",
           headers: { "User-Agent": "github-connect" }
         };
-
         var request = https.request(options, function(response){
           var body = '';
           response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
@@ -208,16 +207,43 @@ exports.refresh_challenges = function() {
                 if (!pulls[p].merged_at) merge_date = null;
                 else merge_date = new Date(pulls[p].merged_at);
 
-                var update = {$addToSet: { 'pulls': {
-                  'repo':      pulls[p].base.repo.full_name,
-                  'auth':      pulls[p].user.login,
-                  'url':       pulls[p].html_url,
-                  'title':     pulls[p].title,
-                  'created':   new Date(pulls[p].created_at),
-                  'merged':    merge_date
-                }}};
+                var pull_options = {
+                  host: "api.github.com",
+                  path: pulls[p].url,
+                  method: "GET",
+                  headers: { "User-Agent": "github-connect" }
+                 };  
+                 var util = require('util'); 
 
-                Challenges.update({'link': ch.link}, update).exec();
+                 var pull_request = https.request(pull_options, function(response){
+                    date = '';
+                    response.on("data", function(chunk){ date+=chunk.toString("utf8"); });
+                    response.on("end", function(){
+                    body = new Object();
+                    try{
+                      body = JSON.parse(date);
+                    }
+                    catch(e)
+                    {
+                       console.log(e);
+                    }
+                    console.log(typeof(body));
+                    var update = {$addToSet: { 'pulls': {
+                      'repo':         pulls[p].base.repo.full_name,
+                      'auth':         pulls[p].user.login,
+                      'url':          pulls[p].html_url,
+                      'title':        pulls[p].title,
+                      'created':      new Date(pulls[p].created_at),
+                      'merged':       merge_date,
+                      'removed_lines':body.deletions,
+                      'added_lines':  body.additions,
+                    }}};
+
+
+                    Challenges.update({'link': ch.link}, update).exec();
+                  })
+                });
+                pull_request.end();
               }
             }
 

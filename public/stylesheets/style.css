@@ -624,7 +624,13 @@ a:hover {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.add {
+    color: #11FF00;
+}
+.remove {
+    color: #FF0000;
 
+}
 .profile-info-location {
     background-image: url('/images/icon-profile-location.png');
 		background-repeat: no-repeat;
