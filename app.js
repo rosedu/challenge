@@ -97,6 +97,7 @@ app.get('/challenges/:ch/users', challenge.one);
 app.get('/challenges/:ch/pulls', challenge.one);
 app.get('/challenges/:ch/join', ensureAuth, challenge.join);
 app.get('/challenges/:ch/refresh', ensureAuth, challenge.refresh);
+app.get('/challenges/:ch/hide_commit', ensureAuth, challenge.hide_commit);
 
 
 var admin = require('./routes/admin.js');

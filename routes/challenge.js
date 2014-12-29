@@ -26,6 +26,11 @@ exports.index = function(req, res) {
     for (var r in ch) {
       // Markdown description
       ch[r].description_mk = markdown.toHTML(ch[r].description);
+
+      // Count PR
+      ch[r].created = 0
+      for (var i in ch[r].pulls)
+        if (ch[r].pulls[i].auth && !ch[r].pulls[i].hide) ch[r].created++
     }
 
     res.render('challenges', {
@@ -93,14 +98,18 @@ exports.one = function(req, res) {
 
       // Count pull req
       for (var r in ch.repos)
-        if (ch.repos[r] == ch.pulls[i].repo) {
+        if (ch.repos[r] == ch.pulls[i].repo && !ch.pulls[i].hide) {
           ch.created_no[r]++;
           if (ch.pulls[i].merged && ch.pulls[i].auth)
             ch.merged_no[r]++;
         }
 
-      // Total merged pulls count
-      if (ch.pulls[i].merged && ch.pulls[i].auth) ch.merged++;
+      if (ch.pulls[i].auth && !ch.pulls[i].hide) {
+        // Total created pulls count
+        ch.created++;
+        // Total merged pulls count
+        if (ch.pulls[i].merged) ch.merged++;
+      }
     }
 
     // Save values
@@ -207,6 +216,27 @@ exports.refresh = function(req, res) {
   function gotChallenge(err, ch) {
     core.refresh_challenges();
     res.redirect('/challenges/' + req.params.ch);
+  }
+};
+
+/*
+Hide commit from list.
+*/
+exports.hide_commit = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch)
+
+    var conditions = {'pulls._id': new mongoose.Types.ObjectId(req.query.id)}
+    var update = {$set: {'pulls.$.hide': true}}
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Hide commit " + req.query.id)
+      res.redirect('/challenges/' + req.params.ch + '/pulls')
+    });
   }
 };
 

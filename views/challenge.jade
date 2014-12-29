@@ -11,7 +11,7 @@ block content
       #idea-description-right
         #description-stats
           #description-stats-left
-            .description-stats-score= challenge.pulls.length
+            .description-stats-score= challenge.created
             = " created "
           #description-stats-separator= "|"
           #description-stats-right
@@ -88,18 +88,28 @@ block content
         h2 Pull requests
         - if (pulls.length != 0)
           - each p in pulls
-            .ch-pull
-              a(href='/#{p.auth}')= p.auth 
-              - each suser in settings.admin
-                - if (everyauth.loggedIn && suser == user.user_name)
-                    a(href='/challenge/' + challenge.link + '/hide_pr?id=' + p._id)  -   Hide
-              .ch-pull-info= "#" + p.repo
-              br
-              a(href='#{p.url}')= p.title
-              - if (p.merged)
-                .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
-              - else
-                .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+            - if (!p.hide || (user && user.admin))
+              .ch-pull
+                a(href='/#{p.auth}')= p.auth 
+                .ch-pull-info= "#" + p.repo
+                br
+                a(href='#{p.url}')= p.title
+                - if (p.merged)
+                  .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
+                - else
+                  .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+
+                p= "Files changed: " + p.files_changed + "  "
+                  = "Lines inserted: " + p.lines_inserted + "  "
+                  = "Lines removed: " + p.lines_removed
+
+                - if (user && user.admin)
+                  - if (p.hide)
+                    input.btn.btn-success(type='submit', value='Hidden', disabled)
+                  - else
+                    a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
+                      input.btn.btn-success(type='submit', value='Hide')
+
         - else
           p There are no pull requests created yet.
         .spacer
