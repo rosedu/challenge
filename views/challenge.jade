@@ -86,7 +86,9 @@ block content
 
       - if (currentUrl == '/challenges/' + challenge.link + '/pulls')
         h2 Pull requests
-        - if (pulls.length != 0)
+        - if (pulls.length == 0)
+          p There are no pull requests created yet.
+        - else
           - each p in pulls
             - if (!p.hide || (user && user.admin))
               .ch-pull
@@ -109,9 +111,6 @@ block content
                   - else
                     a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
                       input.btn.btn-success(type='submit', value='Hide')
-
-        - else
-          p There are no pull requests created yet.
         .spacer
 
       - if (currentUrl == '/challenges/' + challenge.link + '/admin')
