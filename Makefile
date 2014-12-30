@@ -31,8 +31,7 @@ test:
 
 run:
 	@mongod &
-	@echo "Server running at localhost:3000"
-	@node app.js
+	@./node_modules/nodemon/bin/nodemon.js app.js
 
 production:
 	@export NODE_ENV=production
