@@ -2,6 +2,7 @@
   "name": "rosedu-challenge",
   "version": "0.0.1",
   "dependencies": {
+    "MD5": "^1.2.1",
     "connect": "2.19.6",
     "cron": "1.0.4",
     "everyauth": "0.4.6",

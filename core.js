@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var https = require('https');
 var fs = require('fs');
 var url = require('url');
+var md5 = require('MD5');
 
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
@@ -159,79 +160,96 @@ exports.get_time_from = function (then) {
 
 
 function create_patch_request(ch, pull) {
-		var patch_url = pull.patch_url;
-		var patch_url_host = url.parse(patch_url, true).host;
-		var patch_url_path = url.parse(patch_url, true).pathname;
-	
-		var patch_options = {
-		  host: patch_url_host,
-		  path: patch_url_path,
-		  method: "GET",
-		  headers: { "User-Agent": "github-connect" }
-		};
+    var patch_url = pull.patch_url;
+    var patch_url_host = url.parse(patch_url, true).host;
+    var patch_url_path = url.parse(patch_url, true).pathname;
 
-		var patch_request = https.request(patch_options, function(response) {
-			var patch_body = '';
+    var patch_options = {
+      host: patch_url_host,
+      path: patch_url_path,
+      method: "GET",
+      headers: { "User-Agent": "github-connect" }
+    };
 
-			response.on("data", function(chunk) {
+    var patch_request = https.request(patch_options, function(response) {
+      var patch_body = '';
+
+      response.on("data", function(chunk) {
         patch_body+=chunk.toString("utf8");
       });
 
-			response.on("end", function() {
-				var files_changed = 0;
-				var lines_inserted = 0;
-				var lines_removed = 0;
-				var temp;
+      response.on("end", function() {
+        var files_changed = 0;
+        var lines_inserted = 0;
+        var lines_removed = 0;
+        var temp;
 
-				if((temp = patch_body.match(/\d+ file[s]? changed/g))) {
-					/* there might be multiple patch parts */	
-					/* must iterate over each one and sum values */
-					for(t in temp) {
-						files_changed += parseInt(temp[t].match(/\d+/));
-					}
-				}
+        if((temp = patch_body.match(/\d+ file[s]? changed/g))) {
+          /* there might be multiple patch parts */
+          /* must iterate over each one and sum values */
+          for(t in temp) {
+            files_changed += parseInt(temp[t].match(/\d+/));
+          }
+        }
 
-				if((temp = patch_body.match(/\d+ insertion[s]?/g))) {
-					/* there might be multiple patch parts */	
-					/* must iterate over each one and sum values */
-					for(t in temp) {
-						lines_inserted += parseInt(temp[t].match(/\d+/));
-					}
-				}
-			
-				if((temp = patch_body.match(/\d+ deletion[s]?/g))) {
-					/* there might be multiple patch parts */	
-					/* must iterate over each one and sum values */
-					for(t in temp) {
-						lines_removed += parseInt(temp[t].match(/\d+/));
-					}
-				}
-	
-				// Check if merge date exists
-				var merge_date;
+        if((temp = patch_body.match(/\d+ insertion[s]?/g))) {
+          /* there might be multiple patch parts */
+          /* must iterate over each one and sum values */
+          for(t in temp) {
+            lines_inserted += parseInt(temp[t].match(/\d+/));
+          }
+        }
 
-				if (!pull.merged_at) merge_date = null;
-				else merge_date = new Date(pull.merged_at);
+        if((temp = patch_body.match(/\d+ deletion[s]?/g))) {
+          /* there might be multiple patch parts */
+          /* must iterate over each one and sum values */
+          for(t in temp) {
+            lines_removed += parseInt(temp[t].match(/\d+/));
+          }
+        }
 
-				var update = {$addToSet: { 'pulls': {
-          '_id':            new mongoose.Types.ObjectId(),
-				  'repo':      		  pull.base.repo.full_name,
-				  'auth':      		  pull.user.login,
-          'hide':           false,
-				  'url':       		  pull.html_url,
-				  'title':     		  pull.title,
-				  'created':   		  new Date(pull.created_at),
-				  'merged':    		  merge_date,
-				  'lines_inserted': lines_inserted,
-				  'lines_removed': 	lines_removed,
-				  'files_changed': 	files_changed
-				}}};
+        // Check if merge date exists
+        var merge_date;
 
-				Challenges.update({'link': ch.link}, update).exec();
-			});
+        if (!pull.merged_at) merge_date = null;
+        else merge_date = new Date(pull.merged_at);
 
-		});
-		patch_request.end();
+        // Generate unique PR id
+        var oid = md5(pull.html_url).substring(0,12)
+
+        var update = {$set: {
+          'pulls.$.title':          pull.title,
+          'pulls.$.created':        new Date(pull.created_at),
+          'pulls.$.merged':         merge_date,
+          'pulls.$.lines_inserted': lines_inserted,
+          'pulls.$.lines_removed':  lines_removed,
+          'pulls.$.files_changed':  files_changed
+        }}
+
+        Challenges.update({'pulls.url': pull.html_url}, update, function (err, count) {
+          // No updates were made, object did not exist, let's push it
+          if (count == 0) {
+            var newpr = {
+              '_id':            new mongoose.Types.ObjectId(oid),
+              'repo':           pull.base.repo.full_name,
+              'auth':           pull.user.login,
+              'hide':           false,
+              'url':            pull.html_url,
+              'title':          pull.title,
+              'created':        new Date(pull.created_at),
+              'merged':         merge_date,
+              'lines_inserted': lines_inserted,
+              'lines_removed':  lines_removed,
+              'files_changed':  files_changed
+            }
+
+            Challenges.update({'link': ch.link}, {$push: {pulls: newpr}}).exec()
+          }
+        })
+      });
+
+    });
+    patch_request.end();
 }
 
 /*
@@ -249,7 +267,7 @@ exports.refresh_challenges = function() {
       var ch = all[c];
 
       // Update last refresh date
-      var update = {$set: {'refresh': Date.now(), 'pulls': []}};
+      var update = {$set: {'refresh': Date.now()}};
       Challenges.update({'link': ch.link}, update).exec();
 
       //New request for each repo of challenge
@@ -285,7 +303,7 @@ exports.refresh_challenges = function() {
                   new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
                   ch.users.indexOf(pulls[p].user.login) > -1) {
 
-				        create_patch_request(ch, pulls[p]);	
+                create_patch_request(ch, pulls[p]); 
                 
               }
             }
