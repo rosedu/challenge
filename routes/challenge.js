@@ -40,10 +40,27 @@ exports.index = function(req, res) {
     })
   };
 };
-
 /*
 Single challenge page.
 */
+
+exports.commit_add = function(req, res) {
+
+  pull = Pulls({
+    repo:  req.body.commit_repo,
+    auth:  req.body.user_name,
+    title: req.body.commit_descr,
+    url:   req.body.commit_link,
+    merged: Date.now(),
+    created: Date.now()
+  })
+
+  Challenges.update({name: req.params.ch}, {$push: { pulls: pull }}).exec(function(err, count) {
+    console.log(count)
+  })
+  res.redirect('/challenges/' + req.params.ch + '/pulls')
+};
+
 exports.one = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
@@ -76,7 +93,6 @@ exports.one = function(req, res) {
     // Markdown description and about section
     ch.description_mk = markdown.toHTML(ch.description);
     ch.about_mk = markdown.toHTML(ch.about);
-
     // Check if current user is admin
     if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
       _self.user.admin = true;
@@ -89,6 +105,7 @@ exports.one = function(req, res) {
     for (var r in ch.repos) {
       ch.created_no[r] = 0;
       ch.merged_no[r] = 0;
+
     }
 
     // Get number of merged pull req and
@@ -161,12 +178,17 @@ exports.edit = function(req, res) {
     var split = [];
     if (req.body.repos == "") req.body.repos = null;
     else split = req.body.repos.split(' ');
-
+    var mentor = [];
+    if (req.body.mentors == "") req.body.mentors = null;
+    else mentor = req.body.mentors.split(" ");
     // Update challenge info
     var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
     var conditions = {'link': req.params.ch};
     var update = {
-      $addToSet: {'repos': {$each: split}},
+      $addToSet: {
+        'repos'   :  {$each: split},
+        'mentors' :  {$each: mentor}
+      },
       $set: {
         'name':        req.body.name,
         'status':      req.body.status,
@@ -329,3 +351,4 @@ exports.email_users = function(req, res) {
     }
   }
 };
+

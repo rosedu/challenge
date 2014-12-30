@@ -91,6 +91,7 @@ app.get('/challenges/:ch/admin', challenge.one);
 app.post('/challenges/:ch/edit', challenge.edit);
 app.post('/challenges/:ch/admin_add', ensureAuth, challenge.admin_add);
 app.post('/challenges/:ch/email_users', ensureAuth, challenge.email_users);
+app.post('/challenges/:ch/commit_add', ensureAuth, challenge.commit_add);
 app.get('/challenges/:ch/admin_remove', ensureAuth, challenge.admin_remove);
 app.get('/challenges/:ch/repo_remove', ensureAuth, challenge.repo_remove);
 app.get('/challenges/:ch/users', challenge.one);
@@ -98,6 +99,7 @@ app.get('/challenges/:ch/pulls', challenge.one);
 app.get('/challenges/:ch/join', ensureAuth, challenge.join);
 app.get('/challenges/:ch/refresh', ensureAuth, challenge.refresh);
 app.get('/challenges/:ch/hide_commit', ensureAuth, challenge.hide_commit);
+
 
 
 var admin = require('./routes/admin.js');

@@ -52,6 +52,8 @@ block content
               .profile-repo-icon-forked
               .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+              br
+              a(href='http://github.com/' + challenge.mentors[r], target="_blank")= "Mentor: " + challenge.mentors[r]
           .ch-pull-info= "* Fork the project and contribute now."
         - else
           p There are no repos set for this challenge.
@@ -159,7 +161,11 @@ block content
           label Add repository (format: user/repo)
           input.span5(name='repos', type='text')
           p To add more, space separe items.
-
+          
+          label Add Mentor (format: user)
+          input.span5(name='mentors', type='text')
+          p To add more, space separe items.
+          
           label About project/repo
           textarea.span7(name='about', rows='4')= challenge.about
           p *Use markdown to style content.
@@ -203,6 +209,26 @@ block content
           br
           label Message
           textarea.span9(name='email_msg', rows='6', required)
+          br
+          input.btn.btn-success(type='submit', value='Send')
+
+        .spacer
+        h2 Add commits
+        | Manually add commits
+        form(method='post', action='/challenges/' + challenge.link + '/commit_add')
+          br
+          label Repo
+          input.span5(name='commit_repo', type='text' , required)
+          br
+          label User name
+          input.span5(name='user_name' , type='text' , required)
+          br
+          label Commit description
+          input.span5(name='commit_descr' , type='text' , required)
+          br
+          label Link
+          input.span5(name='commit_link', type=text, required)
+          br
           br
           input.btn.btn-success(type='submit', value='Send')
 
