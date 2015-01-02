@@ -35,6 +35,7 @@ var Challenges = new Schema({
   email:        {type: String, default: ""},
   logo:         {type: String, default: ""},
   repos:        {type: [String], default: []},
+  mentors:      {type: [String], default: ["test"]},
   about:        {type: String, default: ""},
   description:  {type: String, default: ""},
   start:        {type: Date, default: null},
