@@ -107,10 +107,11 @@ block content
 
                 - if (user && user.admin)
                   - if (p.hide)
-                    input.btn.btn-success(type='submit', value='Hidden', disabled)
+                    a(href='/challenges/' + challenge.link + '/unhide_commit?id=' + p._id)
+                      input.btn.btn-warning(type='submit', value='Hidden')
                   - else
                     a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
-                      input.btn.btn-success(type='submit', value='Hide')
+                      input.btn.btn-success(type='submit', value='Visible')
         .spacer
 
       - if (currentUrl == '/challenges/' + challenge.link + '/admin')
