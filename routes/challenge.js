@@ -220,6 +220,27 @@ exports.refresh = function(req, res) {
 };
 
 /*
+Star commit from list.
+*/
+exports.star = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch)
+
+    var conditions = {'pulls._id': new mongoose.Types.ObjectId(req.query.id)}
+    var update = {$set: {'pulls.$.stars': req.body.stars}}
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Starred commit " + req.query.id)
+      res.redirect('/challenges/' + req.params.ch + '/pulls')
+    });
+  }
+};
+
+/*
 Hide commit from list.
 */
 exports.hide_commit = function(req, res) {
