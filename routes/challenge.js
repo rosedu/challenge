@@ -220,9 +220,9 @@ exports.refresh = function(req, res) {
 };
 
 /*
-Star commit from list.
+Rate Pull Request from list.
 */
-exports.star = function(req, res) {
+exports.rate = function(req, res) {
 
   Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
 
@@ -232,9 +232,8 @@ exports.star = function(req, res) {
       return res.redirect('/challenges/' + req.params.ch)
 
     var conditions = {'pulls._id': new mongoose.Types.ObjectId(req.query.id)}
-    var update = {$set: {'pulls.$.stars': req.body.stars}}
+    var update = {$set: {'pulls.$.rating': req.body.rating}}
     Challenges.update(conditions, update, function (err, num) {
-      console.log("* Starred commit " + req.query.id)
       res.redirect('/challenges/' + req.params.ch + '/pulls')
     });
   }

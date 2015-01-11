@@ -104,7 +104,7 @@ block content
                 p= "Files changed: " + p.files_changed + "  "
                   = "Lines inserted: " + p.lines_inserted + "  "
                   = "Lines removed: " + p.lines_removed + "  "
-                  = "Stars: " + p.stars
+                  = "Rating: " + p.rating
 
                 - if (user && user.admin)
                   - if (p.hide)
@@ -115,13 +115,13 @@ block content
                       input.btn.btn-success(type='submit', value='Displayed')
 
                   = " Rate "
-                  form(method='post', action='/challenges/' + challenge.link + '/star?id=' + p._id)
-                    select.selectpicker.span1(name='stars', type='text', onchange='this.form.submit()')
+                  form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
+                    select.selectpicker.span1(name='rating', type='text', onchange='this.form.submit()')
                       each val in [0, 1, 2, 3, 4, 5]
-                        if (p.stars == val)
+                        if (p.rating == val)
                           option(selected)= val
                         else
-                          option= val
+                          option= 0
 
         .spacer
 
