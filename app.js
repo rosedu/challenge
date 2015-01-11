@@ -89,6 +89,7 @@ app.get('/challenges', challenge.index);
 app.get('/challenges/:ch', challenge.one);
 app.get('/challenges/:ch/admin', challenge.one);
 app.post('/challenges/:ch/edit', challenge.edit);
+app.post('/challenges/:ch/rate', challenge.rate);
 app.post('/challenges/:ch/admin_add', ensureAuth, challenge.admin_add);
 app.post('/challenges/:ch/email_users', ensureAuth, challenge.email_users);
 app.get('/challenges/:ch/admin_remove', ensureAuth, challenge.admin_remove);

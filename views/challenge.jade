@@ -103,7 +103,8 @@ block content
 
                 p= "Files changed: " + p.files_changed + "  "
                   = "Lines inserted: " + p.lines_inserted + "  "
-                  = "Lines removed: " + p.lines_removed
+                  = "Lines removed: " + p.lines_removed + "  "
+                  = "Rating: " + p.rating
 
                 - if (user && user.admin)
                   - if (p.hide)
@@ -112,6 +113,16 @@ block content
                   - else
                     a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
                       input.btn.btn-success(type='submit', value='Displayed')
+
+                  = " Rate "
+                  form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
+                    select.selectpicker.span1(name='rating', type='text', onchange='this.form.submit()')
+                      each val in [0, 1, 2, 3, 4, 5]
+                        if (p.rating == val)
+                          option(selected)= val
+                        else
+                          option= 0
+
         .spacer
 
       - if (currentUrl == '/challenges/' + challenge.link + '/admin')
@@ -231,10 +242,10 @@ block content
           a(href='/challenges/' + challenge.link)
             .submenu-item About
         - if (currentUrl == "/challenges/" + challenge.link + '/pulls')
-          .submenu-item-selected Commits
+          .submenu-item-selected Pulls
         - else
           a(href='/challenges/' + challenge.link + '/pulls')
-            .submenu-item Commits
+            .submenu-item Pulls
         - if (currentUrl == "/challenges/" + challenge.link + '/users')
           .submenu-item-selected Participants
         - else
