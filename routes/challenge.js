@@ -50,6 +50,8 @@ exports.one = function(req, res) {
   var _self = {};
   var preq = [];
 
+  _self.err = req.query.err
+
   Users.findOne({'user_id': uid}).exec(gotUser);
 
   function gotUser(err, user) {
@@ -139,7 +141,8 @@ exports.one = function(req, res) {
       currentUrl: req.path,
       challenge:  _self.ch,
       pulls:      _self.ch.pulls,
-      people:     _self.people
+      people:     _self.people,
+      err:        _self.err
     });
   }
 };

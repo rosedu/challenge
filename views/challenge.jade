@@ -1,6 +1,12 @@
 extends layout
 
 block content
+  if (err)
+    .announcement.err
+        .announcement-inner
+          if (err == 'invalid_formulae')
+            | Invalid score formulae provided. Please rewrite it.
+    .spacer
 
   #menu
     #idea-desc
