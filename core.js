@@ -238,11 +238,16 @@ function create_patch_request(ch, pull) {
               'title':          pull.title,
               'created':        new Date(pull.created_at),
               'merged':         merge_date,
-              'score':          eval(ch.formulae),
+              'score':          0,
+              'rating':         0,
               'lines_inserted': lines_inserted,
               'lines_removed':  lines_removed,
               'files_changed':  files_changed
             }
+
+            // Update score if formulae is valid
+            if (exports.eval_formulae(ch.formulae))
+              newpr['score'] = exports.eval_formulae(ch.formulae, newpr)
 
             Challenges.update({'link': ch.link}, {$push: {pulls: newpr}}).exec()
           }
@@ -251,6 +256,46 @@ function create_patch_request(ch, pull) {
 
     });
     patch_request.end();
+}
+
+/*
+Replace individual constants in formulae with actual values
+and supply a result.
+
+If pull argument is missing, test arithmetic expression using a default value
+and try to evaluate expression. Returns null if failed.
+
+IL - Inserted lines
+RL - Removed lines
+FC - Files changed
+R  - Rating
+*/
+exports.eval_formulae = function(formulae, pull) {
+
+  // Store final result
+  score = null
+
+  // Default test value, if parameter is missing
+  pull = pull || {
+    'lines_inserted': 0,
+    'lines_removed': 0,
+    'files_changed': 0,
+    'rating': 0
+  }
+
+  // Replace all occurances
+  formulae = formulae.replace(/IL/g, pull.lines_inserted)
+  formulae = formulae.replace(/RL/g, pull.lines_removed)
+  formulae = formulae.replace(/FC/g, pull.files_changed)
+  formulae = formulae.replace(/R/g,  pull.rating)
+
+  try {
+    score = eval(formulae)
+  } catch(err) {
+    score = null
+  }
+
+  return score
 }
 
 /*
@@ -304,8 +349,7 @@ exports.refresh_challenges = function() {
                   new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
                   ch.users.indexOf(pulls[p].user.login) > -1) {
 
-                create_patch_request(ch, pulls[p]); 
-                
+                create_patch_request(ch, pulls[p]);
               }
             }
           });

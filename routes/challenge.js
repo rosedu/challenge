@@ -201,15 +201,22 @@ exports.update_formulae = function(req, res) {
     var update = {$set: {'formulae': req.body.formulae}}
     Challenges.update(conditions, update, function (err, num) {
       console.log("* Changed formulae for " + req.params.ch)
-      res.redirect('/challenges/' + req.params.ch + '/admin')
 
-      // Update score for every PR
-      for (var i=0; i<ch.pulls.length; i++) {
-        score = eval(req.body.formulae)
+      // Check used forumulae
+      score = core.eval_formulae(req.body.formulae)
+      if (!score) {
+        res.redirect('/challenges/' + req.params.ch + '/admin?err=invalid_formulae')
+      } else {
+        res.redirect('/challenges/' + req.params.ch + '/admin')
 
-        var conditions = {'pulls._id': ch.pulls[i]._id}
-        var update = {$set: {'pulls.$.score': score}}
-        Challenges.update(conditions, update).exec()
+        // Update score for every PR
+        for (var i=0; i<ch.pulls.length; i++) {
+          score = core.eval_formulae(req.body.formulae, ch.pulls[i])
+
+          var conditions = {'pulls._id': ch.pulls[i]._id}
+          var update = {$set: {'pulls.$.score': score}}
+          Challenges.update(conditions, update).exec()
+        }
       }
     })
   }
