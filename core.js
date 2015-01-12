@@ -238,6 +238,7 @@ function create_patch_request(ch, pull) {
               'title':          pull.title,
               'created':        new Date(pull.created_at),
               'merged':         merge_date,
+              'score':          eval(ch.formulae),
               'lines_inserted': lines_inserted,
               'lines_removed':  lines_removed,
               'files_changed':  files_changed

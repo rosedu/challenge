@@ -92,6 +92,8 @@ block content
           - each p in pulls
             - if (!p.hide || (user && user.admin))
               .ch-pull
+                p= p.score
+
                 a(href='/#{p.auth}')= p.auth
                 .ch-pull-info= "#" + p.repo
                 br

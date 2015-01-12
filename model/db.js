@@ -56,6 +56,7 @@ var Pulls = new Schema({
   created:         {type: Date, default: null},
   merged:          {type: Date, default: null},
   rating:          {type: Number, default: 0},
+  score:           {type: Number, default: 0},
   lines_inserted:  {type: Number, default: 0},
   lines_removed:   {type: Number, default: 0},
   files_changes:   {type: Number, default: 0}
