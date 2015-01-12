@@ -200,8 +200,16 @@ exports.update_formulae = function(req, res) {
     if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
       return res.redirect('/challenges/' + req.params.ch)
 
+
+    display_scores = false
+    if (req.body.display_scores == 'on')
+      display_scores = true
+
     var conditions = {'link': req.params.ch};
-    var update = {$set: {'formulae': req.body.formulae}}
+    var update = {$set: {
+      'formulae': req.body.formulae,
+      'display_scores': display_scores
+    }}
     Challenges.update(conditions, update, function (err, num) {
       console.log("* Changed formulae for " + req.params.ch)
 

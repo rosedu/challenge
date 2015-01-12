@@ -29,21 +29,22 @@ var Notifications = new Schema({
 });
 
 var Challenges = new Schema({
-  name:         String,
-  status:       {type: String, default: "tease"},
-  link:         {type: String, default: null},
-  email:        {type: String, default: ""},
-  logo:         {type: String, default: ""},
-  repos:        {type: [String], default: []},
-  about:        {type: String, default: ""},
-  description:  {type: String, default: ""},
-  start:        {type: Date, default: null},
-  end:          {type: Date, default: null},
-  refresh:      {type: Date, default: null},
-  formulae:     {type: String, default: ""},
-  users:        {type:[String], default: []},
-  admins:       [String],
-  pulls:        [Pulls]
+  name:           String,
+  status:         {type: String, default: "tease"},
+  link:           {type: String, default: null},
+  email:          {type: String, default: ""},
+  logo:           {type: String, default: ""},
+  repos:          {type: [String], default: []},
+  about:          {type: String, default: ""},
+  description:    {type: String, default: ""},
+  start:          {type: Date, default: null},
+  end:            {type: Date, default: null},
+  refresh:        {type: Date, default: null},
+  formulae:       {type: String, default: ""},
+  display_scores: {type: Boolean, default: false},
+  users:          {type:[String], default: []},
+  admins:         [String],
+  pulls:          [Pulls]
 });
 
 var Pulls = new Schema({
