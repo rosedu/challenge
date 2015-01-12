@@ -206,6 +206,15 @@ block content
           input.btn.btn-success(type='submit', value='Add admin')
 
         .spacer
+        h2 Points formulae
+        | Change formulae by which contributions are rated.
+        form(method='post', action='/challenges/' + challenge.link + '/update_formulae')
+          = " = "
+          input.span5(name='formulae', type='text', value='#{challenge.formulae}', required)
+          br
+          input.btn.btn-success(type='submit', value='Send')
+
+        .spacer
         h2 Send email
         | Send email to all participants in challenge.
         form(method='post', action='/challenges/' + challenge.link + '/email_users')

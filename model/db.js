@@ -40,6 +40,7 @@ var Challenges = new Schema({
   start:        {type: Date, default: null},
   end:          {type: Date, default: null},
   refresh:      {type: Date, default: null},
+  formulae:     {type: String, default: ""},
   users:        {type:[String], default: []},
   admins:       [String],
   pulls:        [Pulls]

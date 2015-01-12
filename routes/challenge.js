@@ -186,6 +186,27 @@ exports.edit = function(req, res) {
 };
 
 /*
+Change challenge formulae by which users are quantified.
+*/
+exports.update_formulae = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge)
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch)
+
+    var conditions = {'link': req.params.ch};
+    var update = {$set: {'formulae': req.body.formulae}}
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Changed formulae for " + req.params.ch)
+      res.redirect('/challenges/' + req.params.ch + '/admin')
+    })
+  }
+};
+
+/*
 Join challenge. Closed challenges cannot be joined.
 */
 exports.join = function(req, res) {
