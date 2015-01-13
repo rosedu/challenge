@@ -50,6 +50,8 @@ exports.one = function(req, res) {
   var _self = {};
   var preq = [];
 
+  _self.err = req.query.err
+
   Users.findOne({'user_id': uid}).exec(gotUser);
 
   function gotUser(err, user) {
@@ -139,7 +141,8 @@ exports.one = function(req, res) {
       currentUrl: req.path,
       challenge:  _self.ch,
       pulls:      _self.ch.pulls,
-      people:     _self.people
+      people:     _self.people,
+      err:        _self.err
     });
   }
 };
@@ -182,6 +185,51 @@ exports.edit = function(req, res) {
       console.log("* Owner made changes to challenge " + req.body.name);
       res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
     });
+  }
+};
+
+/*
+Change challenge formulae by which users are quantified.
+*/
+exports.update_formulae = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge)
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch)
+
+
+    display_scores = false
+    if (req.body.display_scores == 'on')
+      display_scores = true
+
+    var conditions = {'link': req.params.ch};
+    var update = {$set: {
+      'formulae': req.body.formulae,
+      'display_scores': display_scores
+    }}
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Changed formulae for " + req.params.ch)
+
+      // Check used forumulae
+      score = core.eval_formulae(req.body.formulae)
+      if (!score) {
+        res.redirect('/challenges/' + req.params.ch + '/admin?err=invalid_formulae')
+      } else {
+        res.redirect('/challenges/' + req.params.ch + '/admin')
+
+        // Update score for every PR
+        for (var i=0; i<ch.pulls.length; i++) {
+          score = core.eval_formulae(req.body.formulae, ch.pulls[i])
+
+          var conditions = {'pulls._id': ch.pulls[i]._id}
+          var update = {$set: {'pulls.$.score': score}}
+          Challenges.update(conditions, update).exec()
+        }
+      }
+    })
   }
 };
 

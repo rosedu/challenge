@@ -1,6 +1,12 @@
 extends layout
 
 block content
+  if (err)
+    .announcement.err
+        .announcement-inner
+          if (err == 'invalid_formulae')
+            | Invalid score formulae provided. Please rewrite it.
+    .spacer
 
   #menu
     #idea-desc
@@ -92,6 +98,11 @@ block content
           - each p in pulls
             - if (!p.hide || (user && user.admin))
               .ch-pull
+                .ch-pull-score
+                  - if (challenge.display_scores)
+                    = p.score
+                    | <br> POINTS
+
                 a(href='/#{p.auth}')= p.auth
                 .ch-pull-info= "#" + p.repo
                 br
@@ -107,15 +118,15 @@ block content
                   = "Rating: " + p.rating
 
                 - if (user && user.admin)
-                  - if (p.hide)
-                    a(href='/challenges/' + challenge.link + '/display_commit?id=' + p._id)
-                      input.btn.btn-warning(type='submit', value='Hidden')
-                  - else
-                    a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
-                      input.btn.btn-success(type='submit', value='Displayed')
-
-                  = " Rate "
                   form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
+                    - if (p.hide)
+                      a(href='/challenges/' + challenge.link + '/display_commit?id=' + p._id)
+                        input.btn.btn-warning(type='submit', value='Hidden')
+                    - else
+                      a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
+                        input.btn.btn-success(type='submit', value='Displayed')
+
+                    = " Rate: "
                     select.selectpicker.span1(name='rating', type='text', onchange='this.form.submit()')
                       each val in [0, 1, 2, 3, 4, 5]
                         if (p.rating == val)
@@ -204,6 +215,25 @@ block content
           input.span5(name='admin', type='text', required)
           br
           input.btn.btn-success(type='submit', value='Add admin')
+
+        .spacer
+        h2 Points formulae
+        | Change formulae by which contributions are rated. <br><br>
+        | The score is computed for each pull request. You can include: <br>
+        | IL - Inserted lines <br>
+        | RL - Removed lines <br>
+        | FC - Files changed <br>
+        | R  - Rating <br>
+        br
+        form(method='post', action='/challenges/' + challenge.link + '/update_formulae')
+          = " = "
+          input.span5(name='formulae', type='text', value='#{challenge.formulae}', required)
+          br
+          input(type='checkbox', name='display_scores')
+          = " Make scores visible to players"
+          br
+          br
+          input.btn.btn-success(type='submit', value='Send')
 
         .spacer
         h2 Send email
