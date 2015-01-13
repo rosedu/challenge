@@ -112,9 +112,9 @@ block content
                   - if (challenge.display_scores)
                     p= "POINTS:" + p.score
                 br
-                p= "Files changed: " + p.files_changed + "  "
-                  = "Lines inserted: " + p.lines_inserted + "  "
-                  = "Lines removed: " + p.lines_removed + "  "
+                p= "Files changed: " + p.files_changed + "    "
+                  = "Lines inserted: " + p.lines_inserted + "    "
+                  = "Lines removed: " + p.lines_removed + "    "
                   = "Rating: " + p.rating
 
                 - if (user && user.admin)
@@ -225,13 +225,13 @@ block content
         | FC - Files changed <br>
         | R  - Rating <br>
         | Example:
-        | = 2 * IL + 3* RL + FC + 2*R
+        | = 2*IL+3*RL+FC1+2*R
         br
         form(method='post', action='/challenges/' + challenge.link + '/update_formulae')
           = " = "
           input.span5(name='formulae', type='text', value='#{challenge.formulae}', required)
           br
-          input(type='checkbox', name='display_scores')
+          input(type='checkbox', name='display_scores', checked=challenge.display_scores==true)
           = " Make scores visible to players"
           br
           br
