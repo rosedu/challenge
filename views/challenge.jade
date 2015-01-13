@@ -98,10 +98,6 @@ block content
           - each p in pulls
             - if (!p.hide || (user && user.admin))
               .ch-pull
-                .ch-pull-score
-                  - if (challenge.display_scores)
-                    = p.score
-                    | <br> POINTS
 
                 a(href='/#{p.auth}')= p.auth
                 .ch-pull-info= "#" + p.repo
@@ -112,6 +108,10 @@ block content
                 - else
                   .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
 
+                .ch-pull-score
+                  - if (challenge.display_scores)
+                    p= "POINTS:" + p.score
+                br
                 p= "Files changed: " + p.files_changed + "  "
                   = "Lines inserted: " + p.lines_inserted + "  "
                   = "Lines removed: " + p.lines_removed + "  "
@@ -132,7 +132,7 @@ block content
                         if (p.rating == val)
                           option(selected)= val
                         else
-                          option= 0
+                          option= val
 
         .spacer
 
@@ -224,6 +224,8 @@ block content
         | RL - Removed lines <br>
         | FC - Files changed <br>
         | R  - Rating <br>
+        | Example:
+        | = 2 * IL + 3* RL + FC + 2*R
         br
         form(method='post', action='/challenges/' + challenge.link + '/update_formulae')
           = " = "
