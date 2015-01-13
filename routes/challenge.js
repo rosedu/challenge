@@ -215,8 +215,9 @@ exports.update_formulae = function(req, res) {
 
       // Check used forumulae
       score = core.eval_formulae(req.body.formulae)
-      if (!score) {
+      if (score === null) {
         res.redirect('/challenges/' + req.params.ch + '/admin?err=invalid_formulae')
+
       } else {
         res.redirect('/challenges/' + req.params.ch + '/admin')
 

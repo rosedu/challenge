@@ -930,14 +930,6 @@ a:hover {
     border-bottom: 1px solid #E5E5E5;
 }
 
-.ch-pull-score {
-    height: 50px;
-    margin: 0px 10px 0px 0px;
-    float: left;
-    text-align: right;
-    font-weight: bold;
-}
-
 .ch-pull-info {
     float: right;
     color: rgb(216, 216, 216);
