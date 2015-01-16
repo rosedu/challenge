@@ -84,7 +84,7 @@ block content
 
         h2 Contact
         - if (!challenge.email)
-          | No contact infomation provided.
+          | No contact information provided.
         - else
           = "Use "
           b= challenge.email
@@ -113,8 +113,8 @@ block content
                   = "Lines removed: " + p.lines_removed + "    "
                   = "Rating: " + p.rating
 
-                - if (challenge.display_scores)
-                  .ch-pull-info= "POINTS:" + p.score
+                  - if (challenge.display_scores)
+                    .ch-pull-info= "POINTS:" + p.score
 
                 - if (user && user.admin)
                   form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
