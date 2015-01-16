@@ -935,6 +935,9 @@ a:hover {
     color: rgb(216, 216, 216);
 }
 
+.ch-pull-score {
+    float: right;
+}
 .ch-user {
     width: 100px;
     float: left;
