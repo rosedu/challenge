@@ -108,10 +108,10 @@ block content
                 - else
                   .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
 
-              - if (challenge.display_scores)
-                p= "POINTS:" + p.score
-                br
-                p= "Files changed: " + p.files_changed + "    "
+                p=
+                  - if (challenge.display_scores)
+                    = "POINTS:" + p.score
+                  = "Files changed: " + p.files_changed + "    "
                   = "Lines inserted: " + p.lines_inserted + "    "
                   = "Lines removed: " + p.lines_removed + "    "
                   = "Rating: " + p.rating
