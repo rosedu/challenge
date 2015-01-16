@@ -272,9 +272,6 @@ R  - Rating
 */
 exports.eval_formulae = function(formulae, pull) {
 
-  // Store final result
-  score = null
-
   // Default test value, if parameter is missing
   pull = pull || {
     'lines_inserted': 0,

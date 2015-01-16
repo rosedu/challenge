@@ -108,11 +108,10 @@ block content
                 - else
                   .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
 
-                .ch-pull-score
+                p=
                   - if (challenge.display_scores)
-                    p= "POINTS:" + p.score
-                br
-                p= "Files changed: " + p.files_changed + "    "
+                    = "POINTS:" + p.score
+                  = "Files changed: " + p.files_changed + "    "
                   = "Lines inserted: " + p.lines_inserted + "    "
                   = "Lines removed: " + p.lines_removed + "    "
                   = "Rating: " + p.rating
@@ -225,7 +224,7 @@ block content
         | FC - Files changed <br>
         | R  - Rating <br>
         | Example:
-        | = 2*IL+3*RL+FC1+2*R
+        | = 2*IL+3*RL+FC+2*R
         br
         form(method='post', action='/challenges/' + challenge.link + '/update_formulae')
           = " = "
