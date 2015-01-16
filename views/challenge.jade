@@ -114,7 +114,7 @@ block content
                   = "Rating: " + p.rating
 
                   - if (challenge.display_scores)
-                    .ch-pull-info= "POINTS:" + p.score
+                    p.ch-pull-info= "POINTS:" + p.score
 
                 - if (user && user.admin)
                   form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
