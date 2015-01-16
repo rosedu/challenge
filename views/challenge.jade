@@ -108,13 +108,13 @@ block content
                 - else
                   .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
 
-                  - if (challenge.display_scores)
-                    p= "POINTS:" + p.score
-                    
                 p= "Files changed: " + p.files_changed + "    "
                   = "Lines inserted: " + p.lines_inserted + "    "
                   = "Lines removed: " + p.lines_removed + "    "
                   = "Rating: " + p.rating
+
+                - if (challenge.display_scores)
+                  .ch-pull-info= "POINTS:" + p.score
 
                 - if (user && user.admin)
                   form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
