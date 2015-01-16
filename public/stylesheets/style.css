@@ -937,6 +937,7 @@ a:hover {
 
 .ch-pull-score {
     float: right;
+    margin-top: -30px;
 }
 .ch-user {
     width: 100px;
