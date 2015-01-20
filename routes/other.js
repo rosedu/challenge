@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Users    = mongoose.model('Users');
+var Challenges = mongoose.model('Challenges');
 var Notifications = mongoose.model('Notifications');
 var core     = require('../core.js');
 
@@ -18,13 +19,28 @@ exports.index = function(req, res) {
     Users.findOne({'user_id': uid}).exec(render);
   };
 
+  // Count all the PRs created and the number of lines of code touched
+  // in all challenges.
+  Challenges.find().exec(getStatistics);
+
+  function getStatistics(err, ch) {
+    _self.lines = 0;
+    _self.pulls = 0;
+    for (var r in ch) {
+      for (var i in ch[r].pulls) {
+        _self.lines += (ch[r].pulls[i].lines_inserted + ch[r].pulls[i].lines_removed);
+      };
+      _self.pulls += ch[r].created;
+    };
+  };
+
   function render(err, user) {
     res.render('index', {
       title:    "ROSEdu Challenge",
       user:     user,
       users:    _self.users,
-      commits:  0,
-      lines:    0
+      pulls:    _self.pulls,
+      lines:    _self.lines
     });
   }
 };

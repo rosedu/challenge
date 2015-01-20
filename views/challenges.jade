@@ -28,7 +28,7 @@ block content
           | Challenge will start soon. Be sure to join.
 
         - if (c.status == 'live')
-          a(href='/challenges/' + c.link + '/pulls')= c.created + " commits"
+          a(href='/challenges/' + c.link + '/pulls')= c.created + " pulls"
           = " - "
           a(href='/challenges/' + c.link + '/users')= c.users.length + " participants"
 
