@@ -39,8 +39,8 @@ exports.index = function(req, res) {
       title:    "ROSEdu Challenge",
       user:     user,
       users:    _self.users,
-      pulls:    _self.pulls,
-      lines:    _self.lines
+      pulls:    0,
+      lines:    0
     });
   }
 };
