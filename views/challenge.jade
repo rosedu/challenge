@@ -118,14 +118,14 @@ block content
                   .ch-pull-score= "POINTS: " + p.score
 
                 - if (user && user.admin)
-                  form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
-                    - if (p.hide)
-                      a(href='/challenges/' + challenge.link + '/display_commit?id=' + p._id)
-                        input.btn.btn-warning(type='submit', value='Hidden')
-                    - else
-                      a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
-                        input.btn.btn-success(type='submit', value='Displayed')
+                  - if (p.hide)
+                    a(href='/challenges/' + challenge.link + '/display_commit?id=' + p._id)
+                      input.btn.btn-warning(type='submit', value='Hidden')
+                  - else
+                    a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
+                      input.btn.btn-success(type='submit', value='Displayed')
 
+                  form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
                     = " Rate: "
                     select.selectpicker.span1(name='rating', type='text', onchange='this.form.submit()')
                       each val in [0, 1, 2, 3, 4, 5]
