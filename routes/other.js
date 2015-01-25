@@ -28,20 +28,19 @@ exports.index = function(req, res) {
     _self.lines = 0;
     _self.pulls = 0;
 
-    for (var c in ch) {
-      for (var p in ch[c].pulls) {
-        // Count only visible PR
-        if (!ch[c].pulls[p].hide) {
+    ch.forEach(function(challenge) {
+      challenge.pulls.forEach(function(pull) {
+        if (!pull.hide) {
           _self.pulls++
 
           // Count number of edited lines, if present
-          if (ch[c].pulls[p].lines_inserted)
-            _self.lines += ch[c].pulls[p].lines_inserted
-          if (ch[c].pulls[p].lines_removed)
-            _self.lines += ch[c].pulls[p].lines_removed
+          if (pull.lines_inserted)
+            _self.lines += pull.lines_inserted
+          if (pull.lines_removed)
+            _self.lines += pull.lines_removed
         }
-      }
-    }
+      })
+    })
 
     render()
   }
