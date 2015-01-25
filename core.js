@@ -86,9 +86,12 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
         // update last_seen
         var conditions = {'user_name': user.user_name};
         var update = {$set: {
-          'last_seen': Date.now(),
-          'followers_no': usersByGhId[ghUser.id].github.followers,
-          'following_no': usersByGhId[ghUser.id].github.following
+          'last_seen':     Date.now(),
+          'user_fullname': usersByGhId[ghUser.id].github.name,
+          'user_email':    usersByGhId[ghUser.id].github.email,
+          'followers_no':  usersByGhId[ghUser.id].github.followers,
+          'following_no':  usersByGhId[ghUser.id].github.following,
+          'location':      usersByGhId[ghUser.id].github.location,
         }};
         Users.update(conditions, update, function (err, num) {
           console.log("* User " + user.user_name + " logged in.");
@@ -107,15 +110,15 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 
         // Import data from github
         return new Users ({
-          user_id:       usersByGhId[ghUser.id].github.id,
-          user_name:     usersByGhId[ghUser.id].github.login,
-          user_fullname: usersByGhId[ghUser.id].github.name,
-          user_email:    usersByGhId[ghUser.id].github.email,
-          avatar_url:    usersByGhId[ghUser.id].github.avatar_url,
-          location:      usersByGhId[ghUser.id].github.location,
-          join_github:   usersByGhId[ghUser.id].github.created_at,
-          followers_no:  usersByGhId[ghUser.id].github.followers,
-          following_no:  usersByGhId[ghUser.id].github.following
+          'user_id':       usersByGhId[ghUser.id].github.id,
+          'user_name':     usersByGhId[ghUser.id].github.login,
+          'user_fullname': usersByGhId[ghUser.id].github.name,
+          'user_email':    usersByGhId[ghUser.id].github.email,
+          'avatar_url':    usersByGhId[ghUser.id].github.avatar_url,
+          'location':      usersByGhId[ghUser.id].github.location,
+          'join_github':   usersByGhId[ghUser.id].github.created_at,
+          'followers_no':  usersByGhId[ghUser.id].github.followers,
+          'following_no':  usersByGhId[ghUser.id].github.following
         }).save (function (err, user, count) {
           console.log("* User " + user.user_name + " added.");
           // send welcome email
