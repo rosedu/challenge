@@ -30,15 +30,16 @@ exports.index = function(req, res) {
 
     for (var c in ch) {
       for (var p in ch[c].pulls) {
-        // Count visible PR
-        if (!ch[c].pulls[p].hidden)
+        // Count only visible PR
+        if (!ch[c].pulls[p].hide) {
           _self.pulls++
 
-        // Count number of edited lines, if present
-        if (ch[c].pulls[p].lines_inserted)
-          _self.lines += ch[c].pulls[p].lines_inserted
-        if (ch[c].pulls[p].lines_removed)
-          _self.lines += ch[c].pulls[p].lines_removed
+          // Count number of edited lines, if present
+          if (ch[c].pulls[p].lines_inserted)
+            _self.lines += ch[c].pulls[p].lines_inserted
+          if (ch[c].pulls[p].lines_removed)
+            _self.lines += ch[c].pulls[p].lines_removed
+        }
       }
     }
 
