@@ -9,41 +9,52 @@ Shows number of registered users, projects and ideas.
 Get user info if logged in.
 */
 exports.index = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
-  var _self = {};
+  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null)
+  var _self = {}
 
-  Users.count().exec(gotUsers);
+  Users.count().exec(gotUsers)
 
   function gotUsers(err, users) {
     _self.users = users;
-    Users.findOne({'user_id': uid}).exec(render);
-  };
+    Users.findOne({'user_id': uid}).exec(gotUser);
+  }
 
-  // Count all the PRs created and the number of lines of code touched
-  // in all challenges.
-  Challenges.find().exec(getStatistics);
+  function gotUser(err, user) {
+    _self.user = user
+    Challenges.find().exec(gotChallenges)
+  }
 
-  function getStatistics(err, ch) {
+  function gotChallenges(err, ch) {
     _self.lines = 0;
     _self.pulls = 0;
-    for (var r in ch) {
-      for (var i in ch[r].pulls) {
-        _self.lines += (ch[r].pulls[i].lines_inserted + ch[r].pulls[i].lines_removed);
-      };
-      _self.pulls += ch[r].created;
-    };
-  };
+
+    for (var c in ch) {
+      for (var p in ch[c].pulls) {
+        // Count visible PR
+        if (!ch[c].pulls[p].hidden)
+          _self.pulls++
+
+        // Count number of edited lines, if present
+        if (ch[c].pulls[p].lines_inserted)
+          _self.lines += ch[c].pulls[p].lines_inserted
+        if (ch[c].pulls[p].lines_removed)
+          _self.lines += ch[c].pulls[p].lines_removed
+      }
+    }
+
+    render()
+  }
 
   function render(err, user) {
     res.render('index', {
       title:    "ROSEdu Challenge",
-      user:     user,
+      user:     _self.user,
       users:    _self.users,
-      pulls:    0,
-      lines:    0
-    });
+      pulls:    _self.pulls,
+      lines:    _self.lines
+    })
   }
-};
+}
 
 
 /*
