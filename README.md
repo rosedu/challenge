@@ -45,5 +45,10 @@ To run the app in development use the corresponding Makefile target
 This will launch the app using [nodemon](http://nodemon.io/) which automatically
 restarts the app when you make changes to the code.
 
+This repo provides you with some db data so you can easily test what you implement.
+If you want to restore the db, please use
+
+        make db-import
+
 
 ### Happy coding !
