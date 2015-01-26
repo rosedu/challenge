@@ -36,21 +36,14 @@ Then **make run** will start the db and app at
         node app.js
 
 
-## Dependencies
-This is a list of the modules we use (package.json):
+## Development
 
-* [express](https://www.npmjs.org/package/express) - web development framework
-* [everyauth](https://www.npmjs.org/package/everyauth) - authentication solution
-* [connect](https://www.npmjs.org/package/connect) - high performance middleware framework
-* [jade](https://www.npmjs.org/package/jade) - Jade template engine
-* [mongoose](https://www.npmjs.org/package/mongoose) - MongoDB ODM
-* [markdown](https://www.npmjs.org/package/markdown) - Markdown parser for javascript
-* [nodemailer](https://www.npmjs.org/package/nodemailer) - send emails
+To run the app in development use the corresponding Makefile target
 
+        make run
 
-Use package.json to install them all:
-  
-        npm install package.json
+This will launch the app using [nodemon](http://nodemon.io/) which automatically
+restarts the app when you make changes to the code.
 
 
 ### Happy coding !
