@@ -137,6 +137,7 @@ exports.one = function(req, res) {
 
   function renderPage() {
     res.render('challenge', {
+      title:      _self.ch.name,
       user:       _self.user,
       currentUrl: req.path,
       challenge:  _self.ch,
