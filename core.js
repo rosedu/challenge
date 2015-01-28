@@ -163,7 +163,7 @@ exports.get_time_from = function (then) {
 
 
 function create_patch_request(ch, pull) {
-    var patch_url = pull.patch_url;
+    var patch_url = pull.url;
     var patch_url_host = url.parse(patch_url, true).host;
     var patch_url_path = url.parse(patch_url, true).pathname;
 
@@ -175,41 +175,14 @@ function create_patch_request(ch, pull) {
     };
 
     var patch_request = https.request(patch_options, function(response) {
-      var patch_body = '';
+      var pull_body = '';
 
       response.on("data", function(chunk) {
-        patch_body+=chunk.toString("utf8");
+        pull_body+=chunk.toString("utf8");
       });
 
       response.on("end", function() {
-        var files_changed = 0;
-        var lines_inserted = 0;
-        var lines_removed = 0;
-        var temp;
-
-        if((temp = patch_body.match(/\d+ file[s]? changed/g))) {
-          /* there might be multiple patch parts */
-          /* must iterate over each one and sum values */
-          for(t in temp) {
-            files_changed += parseInt(temp[t].match(/\d+/));
-          }
-        }
-
-        if((temp = patch_body.match(/\d+ insertion[s]?/g))) {
-          /* there might be multiple patch parts */
-          /* must iterate over each one and sum values */
-          for(t in temp) {
-            lines_inserted += parseInt(temp[t].match(/\d+/));
-          }
-        }
-
-        if((temp = patch_body.match(/\d+ deletion[s]?/g))) {
-          /* there might be multiple patch parts */
-          /* must iterate over each one and sum values */
-          for(t in temp) {
-            lines_removed += parseInt(temp[t].match(/\d+/));
-          }
-        }
+        var pull_info = JSON.parse(pull_body);
 
         // Check if merge date exists
         var merge_date;
@@ -224,9 +197,9 @@ function create_patch_request(ch, pull) {
           'pulls.$.title':          pull.title,
           'pulls.$.created':        new Date(pull.created_at),
           'pulls.$.merged':         merge_date,
-          'pulls.$.lines_inserted': lines_inserted,
-          'pulls.$.lines_removed':  lines_removed,
-          'pulls.$.files_changed':  files_changed
+          'pulls.$.lines_inserted': pull_info.additions,
+          'pulls.$.lines_removed':  pull_info.deletions,
+          'pulls.$.files_changed':  pull_info.changed_files
         }}
 
         Challenges.update({'pulls.url': pull.html_url}, update, function (err, count) {
@@ -243,9 +216,9 @@ function create_patch_request(ch, pull) {
               'merged':         merge_date,
               'score':          0,
               'rating':         0,
-              'lines_inserted': lines_inserted,
-              'lines_removed':  lines_removed,
-              'files_changed':  files_changed
+              'lines_inserted': pull_info.additions,
+              'lines_removed':  pull_info.deletions,
+              'files_changed':  pull_info.changed_files
             }
 
             // Update score if formulae is valid
