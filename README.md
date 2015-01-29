@@ -45,6 +45,18 @@ To run the app in development use the corresponding Makefile target
 This will launch the app using [nodemon](http://nodemon.io/) which automatically
 restarts the app when you make changes to the code.
 
+If you need to stay logged in, you can provide a username to the **run** command.
+The app will authenticate you after the first handled request.
+
+        make run user=justin
+
+You can also switch user once the app is running, by visiting the following URL
+
+        localhost:3000/login/justin
+
+Superusers are defined in **model/macro.js** file. The default one is **mariuscoto**.
+Use it to get access to the admin console (localhost:3000/admin).
+
 This repo provides you with some db data so you can easily test what you implement.
 If you want to restore the db, please use
 

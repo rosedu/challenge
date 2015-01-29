@@ -1,13 +1,14 @@
-var express = require('express');
-var app = module.exports = express();
-global.config = [];
+var express = require('express')
+var app = module.exports = express()
+global.config = []
 
 
 app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
   global.config.redis_secret = 'big secret'
   //global.config = require('./lib/config')
-  global.config.status = 'dev';
+  global.config.status = 'dev'
+  global.config.login = process.argv[2]
 });
 
 app.configure('production', function(){
@@ -31,7 +32,9 @@ var MACRO = require('./model/macro.js')
   , everyauth = require('everyauth')
   , mongoose = require('mongoose')
   , core = require('./core.js')
-  , cron = require('cron').CronJob;
+  , cron = require('cron').CronJob
+
+var Users    = mongoose.model('Users')
 
 // Refresh challenge cron job
 var job = new cron(MACRO.CRON.CHALLENGE, function(){
@@ -70,6 +73,49 @@ app.configure(function() {
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
+
+
+// Automatically login if username argument provided, in dev env
+app.all('*', function(req, res, next) {
+
+  if (global.config.status === 'dev') {
+    username = ''
+    regex = '/login/(.*)'
+
+    if (req.path.match(regex)) {
+      username = req.path.match(regex)[1]
+    } else if (global.config.login) {
+      username = global.config.login
+      global.config.login = false
+    } else {
+      return next()
+    }
+
+    userid = parseInt(username, 36)
+    core.add_user(userid, username, generate_session)
+
+    function generate_session (err) {
+      if (err) console.log('[ERR] Could not add user to db.')
+
+      req.session.regenerate(function (err) {
+        req.session.auth = {
+          'loggedIn':  true,
+          'github': {
+            'user': {
+              'id':    userid,
+              'login': username
+            }
+          }
+        }
+
+        return next()
+      })
+    }
+
+  } else {
+    return next()
+  }
+})
 
 
 // routes defined here

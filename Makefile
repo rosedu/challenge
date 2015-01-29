@@ -31,7 +31,7 @@ test:
 
 run:
 	@mongod &
-	@./node_modules/nodemon/bin/nodemon.js app.js
+	@./node_modules/nodemon/bin/nodemon.js app.js $(user)
 
 production:
 	@export NODE_ENV=production
