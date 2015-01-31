@@ -333,3 +333,34 @@ exports.refresh_challenges = function() {
     }
   }
 }
+
+/*
+Adds dummy user with given id and username to db.
+This is used during development when multiple users are needed for testing
+purposes.
+*/
+exports.add_user = function(userid, username, callback) {
+  var u = {'id': userid, 'login': username}
+
+  // Add some content for user
+  var repo = {
+    'name':           username + '\'s cool repo',
+    'description':    'A very nice description should be added here.',
+    'html_url':       'http://www.github.com',
+    'fork':           true,
+    'forks_count':    3,
+    'watchers_count': 5,
+    'closed_pulls':   3,
+  }
+  var update = {
+    'user_id':       u.id,
+    'user_name':     u.login,
+    'user_fullname': 'Development user',
+    'user_email':    'dev@github-connect.com',
+    'avatar_url':    'https://avatars.githubusercontent.com/u/0',
+    'location':      'Somewhere',
+    'repos':         [repo]
+  }
+
+  Users.update({'user_id': u.id}, update, {'upsert': true}).exec(callback)
+}
