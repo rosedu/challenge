@@ -272,65 +272,81 @@ exports.eval_formulae = function(formulae, pull) {
 }
 
 /*
-Refresh all repos from all challeneges that are active ('live').
+Refresh specified challenge.
+If no argument is provided, all challenges are refreshed, as long as
+they are active ('live').
 */
-exports.refresh_challenges = function() {
-
-  Challenges.find({'status': 'live'}).exec(gotChallenges);
+exports.refresh_challenges = function(challenge) {
+  if (typeof challenge !== 'undefined') {
+    gotChallenges('', [challenge])
+  } else {
+    Challenges.find({'status': 'live'}).exec(gotChallenges)
+  }
 
   function gotChallenges(err, all) {
-
-    // For each challenge in pool
-    for (var c in all) {
-
-      var ch = all[c];
-
+    all.forEach(function(ch) {
       // Update last refresh date
-      var update = {$set: {'refresh': Date.now()}};
-      Challenges.update({'link': ch.link}, update).exec();
+      var update = {$set: {'refresh': Date.now()}}
+      Challenges.update({'link': ch.link}, update).exec()
 
-      //New request for each repo of challenge
-      for (var r=0; r<ch.repos.length; r++) {
+      // Request repo info
+      ch.repos.forEach(function(repo) {
+        get_repo_info(ch, repo)
+      })
+    })
+  }
 
-        var options = {
-          host: "api.github.com",
-          path: "/repos/" + ch.repos[r] + "/pulls?state=all",
-          method: "GET",
-          headers: { "User-Agent": "github-connect" }
-        };
+  function get_repo_info(ch, repo, token) {
+    token_query = ''
+    if (typeof token !== 'undefined')
+      token_query = '&access_token=' + token
 
-        var request = https.request(options, function(response){
-          var body = '';
-
-          response.on("data", function(chunk){
-            body+=chunk.toString("utf8");
-          });
-
-          response.on("end", function(){
-            var pulls = JSON.parse(body);
-
-            // Log errors
-            if (pulls.message)
-              console.log("[ERR] " + pulls.message + " - " + options.path
-                + " (" + pulls.documentation_url + ")");
-
-            for (var p in pulls) {
-
-              // Accept only pulls created after challenge start date, before end
-              // date and only from registered users
-              if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
-                  new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
-                  ch.users.indexOf(pulls[p].user.login) > -1) {
-
-                create_patch_request(ch, pulls[p]);
-              }
-            }
-          });
-        });
-        request.end();
-
+    var options = {
+      host: 'api.github.com',
+      path: '/repos/' + repo + '/pulls?state=all' + token_query,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'github-connect'
       }
     }
+
+    var request = https.request(options, function(response) {
+      var body = ''
+
+      response.on("data", function(chunk) {
+        body+=chunk.toString("utf8")
+      })
+
+      response.on("end", function() {
+        var pulls = JSON.parse(body)
+
+        // Log errors
+        if (pulls.message) {
+          if (pulls.message.match('API rate limit exceeded')) {
+            console.log('[ERR] Rate limited. Retrying ...')
+            //arguments.callee(ch, repo, new_token)
+            return
+
+          } else {
+            console.log("[ERR] " + pulls.message + " - " + options.path
+              + " (" + pulls.documentation_url + ")")
+          }
+        }
+
+        pulls.forEach(function(pull) {
+          // Accept only pulls created after challenge start date, before end
+          // date and only from registered users
+          if (new Date(pull.created_at).getTime() > ch.start.getTime() &&
+              new Date(pull.created_at).getTime() < ch.end.getTime() &&
+              ch.users.indexOf(pull.user.login) > -1) {
+
+            create_patch_request(ch, pull)
+          }
+        })
+      })
+    })
+
+    request.end()
   }
 }
 
@@ -355,6 +371,7 @@ exports.add_user = function(userid, username, callback) {
   var update = {
     'user_id':       u.id,
     'user_name':     u.login,
+    'token':         '32131231231231321',
     'user_fullname': 'Development user',
     'user_email':    'dev@github-connect.com',
     'avatar_url':    'https://avatars.githubusercontent.com/u/0',
