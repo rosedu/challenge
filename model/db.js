@@ -72,5 +72,6 @@ mongoose.model('Users', Users)
 mongoose.model('Notifications', Notifications)
 mongoose.model('Challenges', Challenges)
 mongoose.model('Pulls', Pulls)
+mongoose.model('Tokens', Tokens)
 
 mongoose.connect('mongodb://localhost/rosedu-challenge')

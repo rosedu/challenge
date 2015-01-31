@@ -8,6 +8,7 @@ var md5 = require('MD5');
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
 var Challenges = mongoose.model('Challenges');
+var Tokens = mongoose.model('Tokens');
 
 var nextUserId = 0;
 global.usersById = {};
@@ -77,6 +78,9 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
   if (typeof usersByGhId[ghUser.id] === 'undefined') {
 
     usersByGhId[ghUser.id] = addUser('github', ghUser);
+
+    // Save user token
+    Tokens.update({'token': accessToken}, update, {'upsert': true}).exec()
 
     Users
     .findOne({ 'user_id': usersByGhId[ghUser.id].github.id },
