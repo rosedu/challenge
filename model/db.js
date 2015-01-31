@@ -1,5 +1,5 @@
-var mongoose = require( 'mongoose' );
-var Schema   = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema   = mongoose.Schema
 
 var Users = new Schema({
   user_id:         String,
@@ -16,7 +16,7 @@ var Users = new Schema({
   join_us:         {type: Date, default: Date.now},
   last_seen:       {type: Date, default: Date.now},
   unread:          {type: Boolean, default: false},
-});
+})
 
 var Notifications = new Schema({
   src:  String,
@@ -26,7 +26,7 @@ var Notifications = new Schema({
   date: {type: Date, default: Date.now},
   link: {type: String, default: null},
   msg:  {type: String, default: null}
-});
+})
 
 var Challenges = new Schema({
   name:           String,
@@ -45,7 +45,7 @@ var Challenges = new Schema({
   users:          {type:[String], default: []},
   admins:         [String],
   pulls:          [Pulls]
-});
+})
 
 var Pulls = new Schema({
   _id:             Schema.Types.ObjectId,
@@ -61,11 +61,16 @@ var Pulls = new Schema({
   lines_inserted:  {type: Number, default: 0},
   lines_removed:   {type: Number, default: 0},
   files_changes:   {type: Number, default: 0}
-});
+})
 
-mongoose.model( 'Users', Users );
-mongoose.model( 'Notifications', Notifications );
-mongoose.model( 'Challenges', Challenges );
-mongoose.model( 'Pulls', Pulls );
+var Tokens = new Schema({
+  token:   {type: String, default: null},
+  expired: {type: Date, default: null}
+})
 
-mongoose.connect( 'mongodb://localhost/rosedu-challenge' );
+mongoose.model('Users', Users)
+mongoose.model('Notifications', Notifications)
+mongoose.model('Challenges', Challenges)
+mongoose.model('Pulls', Pulls)
+
+mongoose.connect('mongodb://localhost/rosedu-challenge')
