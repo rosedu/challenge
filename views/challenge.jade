@@ -250,6 +250,27 @@ block content
           br
           input.btn.btn-success(type='submit', value='Send')
 
+        .spacer
+        h2 Manage blacklist
+        | Manage a list of blacklisted users. <br>
+        | Their commits' are hidden by default but you can change that. <br>
+
+        <br>
+        h3 Blacklist:
+        - for (var b=0; b<challenge.blacklist.length; b++)
+          form(method='post', action='/challenges/' + challenge.link + '/unblacklist_user')
+            input(type='hidden', name='username', value="#{challenge.blacklist[b]}")
+            =challenge.blacklist[b]
+            input.btn.btn-success(type='submit', value='Remove')
+
+
+        form(method='post', action='/challenges/' + challenge.link + '/blacklist_user')
+          br
+          label Username
+          input.span5(name='username', type='text', required)
+          br
+          input.btn.btn-success(type='submit', value='Blacklist')
+
       - if (currentUrl == '/challenges/' + challenge.link + '/users')
         h2 Participants
         - if (people.length != 0)

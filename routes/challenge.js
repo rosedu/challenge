@@ -419,3 +419,71 @@ exports.email_users = function(req, res) {
     }
   }
 };
+
+/*
+Add a user to the blacklist.
+*/
+exports.blacklist_user = function(req, res) {
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    var conditions = {'link': req.params.ch};
+    var update = {$addToSet: {'blacklist': req.body.username}};
+    Challenges.update(conditions, update, function (err, num) {
+      console.log(
+                    "* User blacklisted: " +
+                    req.body.username +
+                    " from repo: " +
+                    req.params.ch
+                  );
+    });
+  
+    for(var i = 0; i < ch.pulls.length; ++ i) {
+      if(ch.pulls[i].auth == req.body.username) {
+        conditions = {"pulls._id" : ch.pulls[i]._id, 'link': req.params.ch};
+        Challenges.update(conditions, {$set: {"pulls.$.hide": true}}, function(err, num){});
+      }
+    }
+
+    res.redirect('/challenges/' + req.params.ch + '/admin');
+  }
+}
+
+/*
+Remove a user from the blacklist.
+*/
+exports.unblacklist_user = function(req, res) {
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    var conditions = {'link': req.params.ch};
+    var update = {$pull: {'blacklist': req.body.username}};
+    Challenges.update(conditions, update, function (err, num) {
+      console.log(
+                    "* User unblacklisted: " +
+                    req.body.username +
+                    " from repo: " +
+                    req.params.ch
+                  );
+    });
+
+    
+    for(var i = 0; i < ch.pulls.length; ++ i) {
+      if(ch.pulls[i].auth == req.body.username) {
+        conditions = {"pulls._id" : ch.pulls[i]._id, 'link': req.params.ch};
+        Challenges.update(conditions, {$set: {"pulls.$.hide": false}}, function(req, num){});
+      }
+    }
+
+    res.redirect('/challenges/' + req.params.ch + '/admin');
+  }
+}
+
