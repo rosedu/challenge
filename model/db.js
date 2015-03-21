@@ -63,9 +63,16 @@ var Pulls = new Schema({
   files_changes:   {type: Number, default: 0}
 });
 
+var Results = new Schema({
+  auth:        String,
+  total:       Number,
+  challenge:   Schema.Types.ObjectId,
+});
+
 mongoose.model( 'Users', Users );
 mongoose.model( 'Notifications', Notifications );
 mongoose.model( 'Challenges', Challenges );
 mongoose.model( 'Pulls', Pulls );
+mongoose.model( 'Results', Results );
 
 mongoose.connect( 'mongodb://localhost/rosedu-challenge' );

@@ -265,6 +265,21 @@ block content
         .spacer
         .spacer
 
+      - if (currentUrl == '/challenges/' + challenge.link + '/results')
+        h2 Results
+        - if (scores.length != 0)
+          - each r, i in scores
+            p
+              = i + ".    "
+              a(href='/#{r.auth}')= r.auth
+              = " -   " + r.total
+          .spacer
+        - else
+          | No results are available at the moment.
+        .spacer
+        .spacer
+
+
 
     .right
       .submenu
@@ -283,6 +298,11 @@ block content
         - else
           a(href='/challenges/' + challenge.link + '/users')
             .submenu-item Participants
+        - if (currentUrl == "/challenges/" + challenge.link + '/results')
+          .submenu-item-selected Results
+        - else
+          a(href='/challenges/' + challenge.link + '/results')
+            .submenu-item Results
         - if (user && user.admin)
           - if (currentUrl == '/challenges/' + challenge.link + '/admin')
             .submenu-item-selected Admin

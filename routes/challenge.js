@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
 var Challenges = mongoose.model('Challenges');
 var Pulls = mongoose.model('Pulls');
+var Results = mongoose.model('Results');
 var https = require('https');
 var markdown = require( "markdown" ).markdown;
 
@@ -124,26 +125,33 @@ exports.one = function(req, res) {
 
     if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
       Users.find({'user_name': {$in: _self.ch.users}}).exec(gotPeople);
+    } else if (req.path.substring(req.path.lastIndexOf('/')) == '/results') {
+      Results.find().sort({'total': -1}).exec(gotResults);
     } else {
       renderPage();
     }
   }
 
+  function gotResults(err, results) {
+    _self.results = results;
+    renderPage();
+  }
+
   function gotPeople(err, people) {
     _self.people = people;
-
     renderPage();
   }
 
   function renderPage() {
     res.render('challenge', {
-      title:      _self.ch.name,
-      user:       _self.user,
-      currentUrl: req.path,
-      challenge:  _self.ch,
-      pulls:      _self.ch.pulls,
-      people:     _self.people,
-      err:        _self.err
+      'title':      _self.ch.name,
+      'user':       _self.user,
+      'currentUrl': req.path,
+      'challenge':  _self.ch,
+      'pulls':      _self.ch.pulls,
+      'people':     _self.people,
+      'scores':    _self.results,
+      'err':        _self.err
     });
   }
 };
@@ -417,5 +425,37 @@ exports.email_users = function(req, res) {
     for (var i=0; i<users.length; i++) {
       core.send_mail(users[i].user_email, 'challenge', req.body.email_msg, req.body.email_sub)
     }
+  }
+};
+
+/*
+Temporat route to populate results.
+Puts 0 for hidden pull requests.
+*/
+exports.update_results = function(req, res) {
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+
+    results = {}
+    ch.pulls.forEach(function (pr) {
+      if (!pr.hide && pr.auth in results) {
+        results[pr.auth] += pr.score
+      } else {
+        results[pr.auth] = 0
+      }
+    })
+
+    // Push updates to results collection
+    for (var author in results) {
+      update = {
+        'auth':      author,
+        'total':     results[author],
+        'challenge': ch._id
+      }
+      Results.update({'auth': author}, update, {upsert: true}).exec()
+    }
+
+    res.redirect('/challenges/' + ch.link)
   }
 };
