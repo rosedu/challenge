@@ -267,14 +267,13 @@ block content
 
       - if (currentUrl == '/challenges/' + challenge.link + '/results')
         h2 Results
-        - if (results.length != 0)
-          - each r in results
-            .ch-user
-              a(href='/#{r.user_name}')= r.user_name
-              .ch-avatar
-                r.score
+        - if (scores.length != 0)
+          - each r, i in scores
+            p
+              = i + ".    "
+              a(href='/#{r.auth}')= r.auth
+              = " -   " + r.total
           .spacer
-          .ch-user-sum= results.length + " users participated"
         - else
           | No results are available at the moment.
         .spacer
