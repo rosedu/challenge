@@ -265,6 +265,22 @@ block content
         .spacer
         .spacer
 
+      - if (currentUrl == '/challenges/' + challenge.link + '/results')
+        h2 Results
+        - if (results.length != 0)
+          - each r in results
+            .ch-user
+              a(href='/#{r.user_name}')= r.user_name
+              .ch-avatar
+                r.score
+          .spacer
+          .ch-user-sum= results.length + " users participated"
+        - else
+          | No results are available at the moment.
+        .spacer
+        .spacer
+
+
 
     .right
       .submenu
@@ -283,6 +299,11 @@ block content
         - else
           a(href='/challenges/' + challenge.link + '/users')
             .submenu-item Participants
+        - if (currentUrl == "/challenges/" + challenge.link + '/results')
+          .submenu-item-selected Results
+        - else
+          a(href='/challenges/' + challenge.link + '/results')
+            .submenu-item Results
         - if (user && user.admin)
           - if (currentUrl == '/challenges/' + challenge.link + '/admin')
             .submenu-item-selected Admin

@@ -124,9 +124,21 @@ exports.one = function(req, res) {
 
     if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
       Users.find({'user_name': {$in: _self.ch.users}}).exec(gotPeople);
+    }
+    /*
+    Show for each author her/his total score for a challenge.
+    */
+    if (req.path.substring(req.path.lastIndexOf('/')) == '/results') {
+      // Replace with Results collection
+      Users.find({'user_name': {$in: _self.ch.users}}).exec(getResults);
     } else {
       renderPage();
     }
+  }
+
+  function getResults(err, results) {
+    _self.results = results;
+    renderPage();
   }
 
   function gotPeople(err, people) {
@@ -143,6 +155,7 @@ exports.one = function(req, res) {
       challenge:  _self.ch,
       pulls:      _self.ch.pulls,
       people:     _self.people,
+      results:    _self.results,
       err:        _self.err
     });
   }
@@ -418,14 +431,4 @@ exports.email_users = function(req, res) {
       core.send_mail(users[i].user_email, 'challenge', req.body.email_msg, req.body.email_sub)
     }
   }
-};
-
-/*
-Show for each author her/his total score for a challenge.
-*/
-exports.results = function(req, resp) {
-  res.render('results', {
-    title:      "Challenge results",
-    challenges: ch
-  })
 };
