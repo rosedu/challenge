@@ -419,3 +419,13 @@ exports.email_users = function(req, res) {
     }
   }
 };
+
+/*
+Show for each author her/his total score for a challenge.
+*/
+exports.results = function(req, resp) {
+  res.render('results', {
+    title:      "Challenge results",
+    challenges: ch
+  })
+};
