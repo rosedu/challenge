@@ -441,6 +441,8 @@ exports.update_results = function(req, res) {
     ch.pulls.forEach(function (pr) {
       if (!pr.hide && pr.auth in results) {
         results[pr.auth] += pr.score
+      } else if (!pr.hide){
+        results[pr.auth] = pr.score
       } else {
         results[pr.auth] = 0
       }
@@ -455,7 +457,6 @@ exports.update_results = function(req, res) {
       }
       Results.update({'auth': author}, update, {upsert: true}).exec()
     }
-
     res.redirect('/challenges/' + ch.link)
   }
 };
