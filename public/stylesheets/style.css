@@ -953,3 +953,32 @@ a:hover {
     padding-top: 5px;
     border-top: 1px solid rgb(216, 216, 216);
 }
+
+.ch-result {
+    width: 750px;
+    height: 20px;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.highlight {
+    background-color: #D8EBF8;
+}
+
+.ch-result-no {
+    width: 30px;
+    margin-left: 10px;
+    float: left;
+    clear: left;
+}
+
+.ch-result-auth {
+    width: 100px;
+    float: left;
+}
+
+.ch-result-score {
+    width: 600px;
+    float: left;
+    text-align: right;
+}

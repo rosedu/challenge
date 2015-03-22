@@ -269,10 +269,11 @@ block content
         h2 Results
         - if (scores.length != 0)
           - each r, i in scores
-            p
-              = i + ".    "
-              a(href='/#{r.auth}')= r.auth
-              = " -   " + r.total
+            div.ch-result(class=(i%2==0?'highlight':''))
+              .ch-result-no= i + '.'
+              .ch-result-auth
+                a(href='/#{r.auth}')= r.auth
+              .ch-result-score= r.total
           .spacer
         - else
           | No results are available at the moment.
