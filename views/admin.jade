@@ -2,16 +2,21 @@ extends layout
 
 block content
   h1= title
-
+  h3= error
   form(method='post', action='/admin/challenge_add')
     label Name
     input.span5(name='name', type='text', required)
 
     label Description
     textarea.span7(name='description', id='no_resize_textarea', rows='4')
+      if (typeof(description) !== 'undefined')
+        | #{description}
 
     label Admins (space separated)
-    input.span5(name='admins', type='text', required)
+    if (typeof(admins) !== 'undefined')
+      input.span5(name='admins', type='text', value="#{admins}", required)
+    else
+      input.span5(name='admins', type='text', required)
 
     br
     input.btn.btn-success(type='submit', value='Add Challenge')
