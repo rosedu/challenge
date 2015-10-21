@@ -11,6 +11,7 @@ exports.index = function(req, res) {
 
   var _self = {};
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var error = req.query.err;
 
   Users.find().exec(gotAll);
 
@@ -23,7 +24,8 @@ exports.index = function(req, res) {
     res.render('admin', {
       'title':  'New challenge',
       'user':   user,
-      'users':  _self.users
+      'users':  _self.users,
+      'err': error
     });
   }
 };
@@ -32,7 +34,6 @@ exports.index = function(req, res) {
 Add info from form to db.
 */
 exports.challenge_add = function(req, res) {
-
   // Add all admins in list even if they do not exist
   new Challenges({
     name:         req.body.name,
@@ -41,8 +42,10 @@ exports.challenge_add = function(req, res) {
     admins:       req.body.admins.split(' ')
   }).save(savedChallenge);
 
-  function savedChallenge(err, todo, count) {
-    console.log("* Challenge " + req.body.name + " saved.");
-    res.redirect('/challenges');
+  function savedChallenge(err) {
+    if (err) 
+      res.redirect('/admin?err=unique_name')
+    else 
+      res.redirect('/challenges');
   }
 };

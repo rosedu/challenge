@@ -16,6 +16,10 @@ block content
     br
     input.btn.btn-success(type='submit', value='Add Challenge')
 
+  if(err == "unique_name") 
+    div.alert.alert-danger
+      | Challenge name should be unique.
+    
   hr
   h1 Registered users
   - each u in users

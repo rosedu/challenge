@@ -29,7 +29,7 @@ var Notifications = new Schema({
 });
 
 var Challenges = new Schema({
-  name:           String,
+  name:           {type: String, unique : true},
   status:         {type: String, default: "tease"},
   link:           {type: String, default: null},
   email:          {type: String, default: ""},

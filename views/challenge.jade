@@ -109,10 +109,10 @@ block content
                   .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
 
                 br
-                p= "Files changed: " + p.files_changed + "    "
-                  = "Lines inserted: " + p.lines_inserted + "    "
-                  = "Lines removed: " + p.lines_removed + "    "
-                  = "Rating: " + p.rating
+                p= "• Files changed: " + p.files_changed + "    "
+                  = "• Lines inserted: " + p.lines_inserted + "    "
+                  = "• Lines removed: " + p.lines_removed + "    "
+                  = "• Rating: " + p.rating
 
                 - if (challenge.display_scores)
                   .ch-pull-score= "POINTS: " + p.score
