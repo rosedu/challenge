@@ -51,7 +51,9 @@ html
 
       #footer
         #copyright
-          b &copy; ROSEdu, 2014
+          b= "&copy; ROSEdu, "
+          script.
+            document.write(new Date().getFullYear() + ' ')
         #logo-footer
         #menu-footer
           ul
