@@ -24,15 +24,17 @@ exports.index = function(req, res) {
   }
 
   function gotChallenges(err, ch) {
-    for (var r in ch) {
+    ch.forEach(function(challenge) {
+
       // Markdown description
-      ch[r].description_mk = markdown.toHTML(ch[r].description);
+      challenge.description_mk = markdown.toHTML(challenge.description);
 
       // Count PR
-      ch[r].created = 0
-      for (var i in ch[r].pulls)
-        if (ch[r].pulls[i].auth && !ch[r].pulls[i].hide) ch[r].created++
-    }
+      challenge.created = 0
+      challenge.pulls.forEach(function(pull) {
+        if (pull.auth && !pull.hide) challenge.created++
+      });
+    });
 
     res.render('challenges', {
       title:      "All challenges",
@@ -89,31 +91,34 @@ exports.one = function(req, res) {
     // Init individual repos pull req counters
     ch.created_no = [];
     ch.merged_no = [];
-    for (var r in ch.repos) {
-      ch.created_no[r] = 0;
-      ch.merged_no[r] = 0;
-    }
+    ch.repos.forEach(function(repo) {
+      ch.created_no[repo] = 0;
+      ch.merged_no[repo] = 0; 
+    });
 
     // Get number of merged pull req and
     // count pulls for each
     ch.merged = 0, ch.created = 0;
-    for (var i in ch.pulls) {
+
+    ch.pulls.forEach(function(pullParam) {
 
       // Count pull req
-      for (var r in ch.repos)
-        if (ch.repos[r] == ch.pulls[i].repo && !ch.pulls[i].hide) {
-          ch.created_no[r]++;
-          if (ch.pulls[i].merged && ch.pulls[i].auth)
-            ch.merged_no[r]++;
+      ch.repos.forEach(function(repoParam) {
+        if(repoParam == pullParam.repo && !pullParam.hide) {
+          ch.created_no[repoParam]++;
+          if(pullParam.merged && pullParam.auth)
+            ch.merged_no[repoParam]++;
         }
 
-      if (ch.pulls[i].auth && !ch.pulls[i].hide) {
-        // Total created pulls count
-        ch.created++;
-        // Total merged pulls count
-        if (ch.pulls[i].merged) ch.merged++;
-      }
-    }
+        if(pullParam.auth && !pullParam.hide) {
+          // Total created pulls count
+          ch.created++;
+          // Total merged pulls count
+          if(pullParam.merged) ch.merged++;
+        }
+      });
+
+    });
 
     // Save values
     _self.ch = ch;
@@ -449,14 +454,16 @@ exports.update_results = function(req, res) {
     })
 
     // Push updates to results collection
-    for (var author in results) {
+    results.forEach(function(resultParam) {
       update = {
-        'auth':      author,
+        'auth':      resultParam,
         'total':     results[author],
         'challenge': ch._id
       }
-      Results.update({'auth': author}, update, {upsert: true}).exec()
-    }
+
+      Results.update({'auth': resultParam}, update, {upsert: true}).exec()
+    });
+    
     res.redirect('/challenges/' + ch.link)
   }
 };

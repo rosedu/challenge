@@ -30,12 +30,20 @@ exports.index = function(req, res) {
     _self.joined = false
 
     // Mark challenges joined by current user
-    for (var ch in challenges) {
-      if (challenges[ch].users.indexOf(_self.cuser.user_name) > -1) {
-        challenges[ch].joined = true
-        _self.joined = true
+
+    challenges.forEach(function(challenge) {
+      if (challenge.users.indexOf(_self.cuser.user_name) > -1) {
+        challenge.joined = true;
+        _self.joined = true;
       }
-    }
+    }); 
+
+    // for (var ch in challenges) {
+    //   if (challenges[ch].users.indexOf(_self.cuser.user_name) > -1) {
+    //     challenges[ch].joined = true
+    //     _self.joined = true
+    //   }
+    // }
 
     res.render('profile', {
       'title':      _self.cuser.user_fullname,
@@ -73,12 +81,17 @@ exports.notifications = function(req, res) {
           Notifications
           .find({ 'dest': cuser.user_name })
           .sort({ 'date' : -1 })
-          .exec(function(err, notif) {
+          .exec(function(err, notifs) {
 
-            for (var i in notif) {
+            notifs.forEach(function(notif) {
               // Format date
-              notif[i].date_f = core.get_time_from(notif[i].date);
-            }
+              notif.date_f = core.get_time_from(notif.date);
+            });
+
+            // for (var i in notif) {
+            //   // Format date
+            //   notif[i].date_f = core.get_time_from(notif[i].date);
+            // }
 
             res.render('profile', {
               'title':      cuser.user_fullname,
