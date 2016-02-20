@@ -2,17 +2,14 @@ var express = require('express')
 var app = module.exports = express()
 global.config = []
 
-
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
+if ('development' == app.get('env')) {
   global.config.redis_secret = 'big secret'
   //global.config = require('./lib/config')
   global.config.status = 'dev'
   global.config.login = process.argv[2]
-});
+}
 
-app.configure('production', function(){
-  app.use(express.errorHandler());
+if ('production' == app.get('env')) {
   global.config.gh_clientId = process.env.clientId;
   global.config.gh_secret = process.env.secret;
   global.config.redis_secret = process.env.redis_secret;
@@ -21,7 +18,7 @@ app.configure('production', function(){
   global.config.mail_pass = process.env.mail_pass;
 
   global.config.status = 'prod';
-});
+}
 
 
 var MACRO = require('./model/macro.js')
@@ -33,6 +30,9 @@ var MACRO = require('./model/macro.js')
   , mongoose = require('mongoose')
   , core = require('./core.js')
   , cron = require('cron').CronJob
+  , favicon = require('serve-favicon')
+  , bodyParser = require('body-parser')
+  , exprSession = require('express-session')
 
 var Users    = mongoose.model('Users')
 
@@ -56,23 +56,23 @@ everyauth
 .redirectPath('/');
 
 
-app.configure(function() {
-  app.set('admin', MACRO.SUPERUSER);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon(__dirname + "/public/images/rc-logo.ico"));
-  app.use(express.json());
-  app.use(express.urlencoded());
-  app.use(express.cookieParser());
-  app.use(express.session({
-    secret: global.config.redis_secret,
-    cookie: { maxAge: 1800000 } //30 min
-  }));
-  app.use(everyauth.middleware());
-
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
-});
+app.set('admin', MACRO.SUPERUSER);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+app.use(favicon(__dirname + "/public/images/rc-logo.ico"));
+app.use(express.static(__dirname + '/public'));
+app.use(everyauth.middleware());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(exprSession({
+  secret            : global.config.redis_secret,
+  resave            : true,
+  saveUninitialized : true,
+  cookie: {
+    secure: false,
+    maxAge: 1800000 //30 min
+  }
+}))
 
 
 // Automatically login if username argument provided, in dev env
@@ -149,6 +149,9 @@ app.get('/challenges/:ch/hide_commit', ensureAuth, challenge.hide_commit);
 app.get('/challenges/:ch/display_commit', ensureAuth, challenge.display_commit);
 app.get('/challenges/:ch/results', challenge.one);
 app.get('/challenges/:ch/update_results', challenge.update_results);
+app.post('/challenges/:ch/blacklist_user', ensureAuth, challenge.blacklist_user);
+app.get('/challenges/:ch/unblacklist_user', ensureAuth, challenge.unblacklist_user);
+
 
 var admin = require('./routes/admin.js');
 app.get('/admin', ensureSuper, admin.index);

@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var https = require('https');
 var fs = require('fs');
 var url = require('url');
-var md5 = require('MD5');
+var md5 = require('md5');
 
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
