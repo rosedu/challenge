@@ -1,4 +1,4 @@
-!!! 5
+doctype html
 html
   head
     title= title
@@ -25,13 +25,11 @@ html
               a(href="/challenges") Challenge
 
         #controls
-          - if (!everyauth.loggedIn)
+          - if (!user)
             a(href="/login") Log in
           - else
             a(href="/" + user.user_name)= " " + user.user_name + " "
-            a(href="/logout")
-              #logout
-
+            a(href="/logout"): #logout
             a(href="/" + user.user_name + "/notifications")
               .notif-box
                 - if (user.unread)
@@ -39,12 +37,8 @@ html
                 - else
                   .notif-read
 
-
-
       #body
         block content
-
-
 
       .spacer
       .spacer
@@ -59,12 +53,10 @@ html
           ul
             li
               - each suser in settings.admin
-                - if (everyauth.loggedIn && suser == user.user_name)
+                - if (user && suser == user.user_name)
                   a(href="/admin") Admin
 
-            li
-              a(href="/faq") FAQ
-            li
-              a(href="/contact") Contact
+            li: a(href="/faq") FAQ
+            li: a(href="/contact") Contact
 
-  include ../public/javascripts/animations.js
+    script(type="text/javascript", src='../public/javascripts/animations.js')

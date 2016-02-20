@@ -28,6 +28,22 @@ var Notifications = new Schema({
   msg:  {type: String, default: null}
 });
 
+var Pulls = new Schema({
+  _id:             Schema.Types.ObjectId,
+  repo:            String,
+  auth:            String,
+  hide:            {type: Boolean, default: false},
+  url:             {type: String, default: null},
+  title:           {type: String, default: null},
+  created:         {type: Date, default: null},
+  merged:          {type: Date, default: null},
+  rating:          {type: Number, default: 0},
+  score:           {type: Number, default: 0},
+  lines_inserted:  {type: Number, default: 0},
+  lines_removed:   {type: Number, default: 0},
+  files_changes:   {type: Number, default: 0}
+});
+
 var Challenges = new Schema({
   name:           {type: String, unique : true},
   status:         {type: String, default: "tease"},
@@ -43,24 +59,9 @@ var Challenges = new Schema({
   formulae:       {type: String, default: ""},
   display_scores: {type: Boolean, default: false},
   users:          {type:[String], default: []},
+  blacklist:      {type: [String], default: []},
   admins:         [String],
   pulls:          [Pulls]
-});
-
-var Pulls = new Schema({
-  _id:             Schema.Types.ObjectId,
-  repo:            String,
-  auth:            String,
-  hide:            {type: Boolean, default: false},
-  url:             {type: String, default: null},
-  title:           {type: String, default: null},
-  created:         {type: Date, default: null},
-  merged:          {type: Date, default: null},
-  rating:          {type: Number, default: 0},
-  score:           {type: Number, default: 0},
-  lines_inserted:  {type: Number, default: 0},
-  lines_removed:   {type: Number, default: 0},
-  files_changes:   {type: Number, default: 0}
 });
 
 var Results = new Schema({

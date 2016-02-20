@@ -94,45 +94,44 @@ block content
         h2 Pull requests
         - if (pulls.length == 0)
           p There are no pull requests created yet.
-        - else
-          - each p in pulls
-            - if (!p.hide || (user && user.admin))
-              .ch-pull
 
-                a(href='/#{p.auth}')= p.auth
-                .ch-pull-info= "#" + p.repo
-                br
-                a(href='#{p.url}')= p.title
-                - if (p.merged)
-                  .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
+        - each p in pulls
+          - if (!p.hide || (user && user.admin))
+            .ch-pull
+              a(href='/#{p.auth}')= p.auth
+              .ch-pull-info= "#" + p.repo
+              br
+              a(href='#{p.url}')= p.title
+              - if (p.merged)
+                .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
+              - else
+                .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+
+              br
+              p= "• Files changed: " + p.files_changed + "    "
+                = "• Lines inserted: " + p.lines_inserted + "    "
+                = "• Lines removed: " + p.lines_removed + "    "
+                = "• Rating: " + p.rating
+
+              - if (challenge.display_scores)
+                .ch-pull-score= "POINTS: " + p.score
+
+              - if (user && user.admin)
+                - if (p.hide)
+                  a(href='/challenges/' + challenge.link + '/display_commit?id=' + p._id)
+                    input.btn.btn-warning(type='submit', value='Hidden')
                 - else
-                  .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+                  a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
+                    input.btn.btn-success(type='submit', value='Displayed')
 
-                br
-                p= "• Files changed: " + p.files_changed + "    "
-                  = "• Lines inserted: " + p.lines_inserted + "    "
-                  = "• Lines removed: " + p.lines_removed + "    "
-                  = "• Rating: " + p.rating
-
-                - if (challenge.display_scores)
-                  .ch-pull-score= "POINTS: " + p.score
-
-                - if (user && user.admin)
-                  - if (p.hide)
-                    a(href='/challenges/' + challenge.link + '/display_commit?id=' + p._id)
-                      input.btn.btn-warning(type='submit', value='Hidden')
-                  - else
-                    a(href='/challenges/' + challenge.link + '/hide_commit?id=' + p._id)
-                      input.btn.btn-success(type='submit', value='Displayed')
-
-                  form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
-                    = " Rate: "
-                    select.selectpicker.span1(name='rating', type='text', onchange='this.form.submit()')
-                      each val in [0, 1, 2, 3, 4, 5]
-                        if (p.rating == val)
-                          option(selected)= val
-                        else
-                          option= val
+                form(method='post', action='/challenges/' + challenge.link + '/rate?id=' + p._id)
+                  = " Rate: "
+                  select.selectpicker.span1(name='rating', type='text', onchange='this.form.submit()')
+                    each val in [0, 1, 2, 3, 4, 5]
+                      if (p.rating == val)
+                        option(selected)= val
+                      else
+                        option= val
 
         .spacer
 
@@ -249,6 +248,21 @@ block content
           textarea.span9(name='email_msg', rows='6', required)
           br
           input.btn.btn-success(type='submit', value='Send')
+
+        .spacer
+        h2 Blacklist:
+        | Users that are blacklisted have hidden commits.
+        .spacer
+        - each a in challenge.blacklist
+          p= a + " "
+            a(href='/challenges/' + challenge.link + '/unblacklist_user?name=' + a) Remove
+
+        form(method='post', action='/challenges/' + challenge.link + '/blacklist_user')
+          br
+          label Add a new user
+          input.span5(name='username', type='text', required)
+          br
+          input.btn.btn-success(type='submit', value='Add to list')
 
       - if (currentUrl == '/challenges/' + challenge.link + '/users')
         h2 Participants
