@@ -1,9 +1,11 @@
+var mongoose   = require('mongoose');
+var nodemailer = require("nodemailer");
+var https      = require('https');
+var fs         = require('fs');
+var url        = require('url');
+var md5        = require('md5');
+
 var MACRO = require('./model/macro.js');
-var mongoose = require('mongoose');
-var https = require('https');
-var fs = require('fs');
-var url = require('url');
-var md5 = require('md5');
 
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
@@ -15,45 +17,44 @@ var usersByGhId = {};
 
 
 exports.send_mail = function (destination, type, body, subject) {
-  var nodemailer = require("nodemailer");
+  if (!global.config.mail_user || !global.config.mail_pass) {
+    console.log('Missing user/pass for SMTP connection. Cannot send email.')
+    return;
+  }
 
-  // create reusable transport method (opens pool of SMTP connections)
-  var smtpTransport = nodemailer.createTransport("SMTP",{
-    service: "Gmail",
-    auth: {
-      user: global.config.mail_user,
-      pass: global.config.mail_pass
-    }
-  });
+  // Create reusable transport method (opens pool of SMTP connections)
+  var smtpURL = 'smtps://' + global.config.mail_user + ':'
+  smtpURL += global.config.mail_pass + '@smtp.gmail.com'
+  var smtpTransport = nodemailer.createTransport(smtpURL);
+
 
   fs.readFile(__dirname + '/public/emails/' + type + '.html', 'utf8', function (err, html) {
-      var mailOpt = {};
+    // Default email source and destiantion
+    var mailOpt = {
+      'from': 'ROSEdu Challenge <challenge@lists.rosedu.org>',
+      'to':   destination
+    }
 
-      if (type == 'welcome') {
-        mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
-        mailOpt['to']      = destination,
-        mailOpt['subject'] = 'Welcome to Challenge by ROSEdu',
-        mailOpt['text']    = '',
-        mailOpt['html']    = html;
-      } else if (type == 'feedback') {
-        mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
-        mailOpt['to']      = 'challenge@lists.rosedu.org',
-        mailOpt['subject'] = 'Feedback: ' + body.email,
-        mailOpt['text']    = body.msg
-      } else if (type == 'challenge') {
-        mailOpt['from']    = 'ROSEdu Challenge <challenge@lists.rosedu.org>';
-        mailOpt['to']      = destination,
-        mailOpt['subject'] = subject,
-        mailOpt['text']    = body
-      }
+    // Handle different types of emails
+    if (type == 'welcome') {
+      mailOpt['subject'] = 'Welcome to Challenge by ROSEdu',
+      mailOpt['text']    = '',
+      mailOpt['html']    = html;
+    } else if (type == 'feedback') {
+      mailOpt['to']      = 'challenge@lists.rosedu.org',
+      mailOpt['subject'] = 'Feedback: ' + body.email,
+      mailOpt['text']    = body.msg
+    } else if (type == 'challenge') {
+      mailOpt['subject'] = subject,
+      mailOpt['text']    = body
+    }
 
-      // send mail with defined transport object
-      smtpTransport.sendMail(mailOpt, function(err, response){
-        if (err) console.log(err);
-        else console.log("* Email sent to " + destination);
-
-        smtpTransport.close();
-      });
+    // Send mail using previously defined transport object
+    smtpTransport.sendMail(mailOpt, function(err, response){
+      if (err) console.log(err);
+      else console.log("* " + type + " email sent to " + mailOpt['to']);
+    });
+    smtpTransport.close();
   });
 }
 
