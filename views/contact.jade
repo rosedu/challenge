@@ -12,7 +12,7 @@ block content
 
       form(method='post', action='/contact')
         label Your email address
-        - if (!everyauth.loggedIn || !user.user_email)
+        - if (!user || !user.user_email)
           input.span5(name='email', type='text', required)
         - else
           input.span5(name='email', type='text', required, value='#{user.user_email}')

@@ -7,7 +7,7 @@ block content
       | Start contributing to Open Source projects and win prizes.
       br
       br
-      - if (!everyauth.loggedIn)
+      - if (!user)
         h4
           a(href='/login')= "Log in "
           | with GitHub.

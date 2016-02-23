@@ -9,7 +9,7 @@ Shows number of registered users, projects and ideas.
 Get user info if logged in.
 */
 exports.index = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null)
+  var uid   = req.user ? req.user.user_id : null
   var _self = {}
 
   Users.count().exec(gotUsers)
@@ -61,8 +61,7 @@ exports.index = function(req, res) {
 Show login button or redirect to page if user already logged in.
 */
 exports.login = function(req, res) {
-  if (req.session.auth)
-    return res.redirect('/' + req.session.auth.github.user.login);
+  if (req.user) return res.redirect('/' + req.user.user_name);
 
   res.render('login', {
     'title':  "Log in",
@@ -91,7 +90,7 @@ exports.feedback = function(req, res) {
 Coantact page holds feedback form.
 */
 exports.contact = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var uid   = req.user ? req.user.user_id : null;
 
   Users.findOne({ user_id: uid }, function(err, user) {
     if (err) return handleError(err);
@@ -108,7 +107,7 @@ exports.contact = function(req, res) {
 FAQ page.
 */
 exports.faq = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var uid   = req.user ? req.user.user_id : null
 
   Users.findOne({ user_id: uid }, function(err, user) {
     if (err) return handleError(err);

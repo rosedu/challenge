@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "body-parser": "^1.15.0",
+    "connect-flash": "^0.1.1",
     "cron": "^1.1.0",
-    "everyauth": "^0.4.9",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "jade": "^1.11.0",
@@ -21,6 +21,8 @@
     "mongoose": "^4.4.4",
     "nodemailer": "^2.2.1",
     "nodemon": "^1.9.0",
+    "passport": "^0.3.2",
+    "passport-github": "^1.1.0",
     "serve-favicon": "^2.3.0"
   },
   "engines": {

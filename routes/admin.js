@@ -8,9 +8,8 @@ var Challenges = mongoose.model('Challenges');
 Add new challenge.
 */
 exports.index = function(req, res) {
-
   var _self = {};
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var uid   = req.user ? req.user.user_id : null
   var error = req.query.err;
 
   Users.find().exec(gotAll);
@@ -43,9 +42,9 @@ exports.challenge_add = function(req, res) {
   }).save(savedChallenge);
 
   function savedChallenge(err) {
-    if (err) 
+    if (err)
       res.redirect('/admin?err=unique_name')
-    else 
+    else
       res.redirect('/challenges');
   }
 };

@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  - if(!everyauth.loggedIn && tab)
+  - if(!user && tab)
     .announcement
       .announcement-inner
         - if (tab == "join")
@@ -12,7 +12,7 @@ block content
     .spacer
     .spacer
 
-  - if (!everyauth.loggedIn)
+  - if (!user)
     - if (status == 'test')
       .card.css3-shadow
         h3 Login is disabled for the moment.

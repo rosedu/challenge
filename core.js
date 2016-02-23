@@ -72,69 +72,6 @@ function addUser (source, sourceUser) {
   return user;
 }
 
-
-exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
-  sess.oauth = accessToken;
-  if (typeof usersByGhId[ghUser.id] === 'undefined') {
-
-    usersByGhId[ghUser.id] = addUser('github', ghUser);
-
-    Users
-    .findOne({ 'user_id': usersByGhId[ghUser.id].github.id },
-               'user_name', function (err, user) {
-      if (err) return handleError(err);
-      if (user != null) {
-        // update last_seen
-        var conditions = {'user_name': user.user_name};
-        var update = {$set: {
-          'last_seen':     Date.now(),
-          'user_fullname': usersByGhId[ghUser.id].github.name,
-          'user_email':    usersByGhId[ghUser.id].github.email,
-          'followers_no':  usersByGhId[ghUser.id].github.followers,
-          'following_no':  usersByGhId[ghUser.id].github.following,
-          'location':      usersByGhId[ghUser.id].github.location,
-        }};
-        Users.update(conditions, update, function (err, num) {
-          console.log("* User " + user.user_name + " logged in.");
-        });
-
-      } else {
-        // Send welcome notification
-        new Notifications({
-          'src':    null,
-          'dest':   usersByGhId[ghUser.id].github.login,
-          'type':   "welcome",
-          'link':   "/faq"
-        }).save(function(err, todo, count) {
-          if (err) console.log("[ERR] Notification not sent.");
-        });
-
-        // Import data from github
-        return new Users ({
-          'user_id':       usersByGhId[ghUser.id].github.id,
-          'user_name':     usersByGhId[ghUser.id].github.login,
-          'user_fullname': usersByGhId[ghUser.id].github.name,
-          'user_email':    usersByGhId[ghUser.id].github.email,
-          'avatar_url':    usersByGhId[ghUser.id].github.avatar_url,
-          'location':      usersByGhId[ghUser.id].github.location,
-          'join_github':   usersByGhId[ghUser.id].github.created_at,
-          'followers_no':  usersByGhId[ghUser.id].github.followers,
-          'following_no':  usersByGhId[ghUser.id].github.following
-        }).save (function (err, user, count) {
-          console.log("* User " + user.user_name + " added.");
-          // send welcome email
-          module.exports.send_mail(user.user_email, 'welcome');
-        });
-      }
-    });
-    return usersByGhId[ghUser.id];
-
-  } else {
-    return usersByGhId[ghUser.id];
-  }
-}
-
-
 exports.get_time_from = function (then) {
   var now = Date.now();
 
@@ -341,27 +278,18 @@ This is used during development when multiple users are needed for testing
 purposes.
 */
 exports.add_user = function(userid, username, callback) {
-  var u = {'id': userid, 'login': username}
-
-  // Add some content for user
-  var repo = {
-    'name':           username + '\'s cool repo',
-    'description':    'A very nice description should be added here.',
-    'html_url':       'http://www.github.com',
-    'fork':           true,
-    'forks_count':    3,
-    'watchers_count': 5,
-    'closed_pulls':   3,
-  }
   var update = {
-    'user_id':       u.id,
-    'user_name':     u.login,
+    'user_id':       userid,
+    'user_name':     username,
     'user_fullname': 'Development user',
     'user_email':    'dev@github-connect.com',
     'avatar_url':    'https://avatars.githubusercontent.com/u/0',
-    'location':      'Somewhere',
-    'repos':         [repo]
+    'location':      'Somewhere'
   }
 
-  Users.update({'user_id': u.id}, update, {'upsert': true}).exec(callback)
+  Users.update({'user_id': userid}, update, {'upsert': true}).exec(function (err) {
+    Users.findOne({'user_id': userid}).exec(function (err, user) {
+      callback(err, user);
+    });
+  });
 }
