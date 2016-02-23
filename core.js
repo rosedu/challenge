@@ -142,7 +142,7 @@ function create_patch_request(ch, pull) {
 
         Challenges.update({'pulls.url': pull.html_url}, update, function (err, count) {
           // No updates were made, object did not exist, let's push it
-          if (count == 0) {
+          if (count.nModified == 0) {
             var newpr = {
               '_id':            new mongoose.Types.ObjectId(oid),
               'repo':           pull.base.repo.full_name,

@@ -24,8 +24,8 @@ module.exports = function(app, passport) {
 
   // GITHUB
   passport.use(new GitHubStrategy({
-    clientID          : global.config.gh_clientId,
-    clientSecret      : global.config.gh_secret,
+    clientID          : global.config.gh_clientId || ' ',
+    clientSecret      : global.config.gh_secret || ' ',
     passReqToCallback : true
 
   }, function(req, token, refreshToken, profile, done) {
