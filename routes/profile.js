@@ -11,7 +11,7 @@ User profile page. Shows all info about selected user.
 exports.index = function(req, res) {
   var _self = {}
   var cname = req.url.substring(1, (req.url + '/').substring(1).indexOf('/')+1);
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var uid   = req.user ? req.user.user_id : null;
 
   Users.findOne ({ 'user_name': cname }, function(err, cuser) {
     if (!cuser) return res.status(404).render('404', {title: "404: File not found"})
@@ -52,7 +52,7 @@ exports.index = function(req, res) {
 Notifications tab.
 */
 exports.notifications = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var uid   = req.user ? req.user.user_id : null;
 
   Users.findOne ({ 'user_name': req.params.user }, function(err, cuser) {
     if (!cuser) return res.render('404', {title: "404: File not found"});

@@ -31,7 +31,7 @@ block content
           h5 following
 
       .profile-links
-        - if (everyauth.loggedIn)
+        - if (user)
           - if (user.user_name == cuser.user_name)
             a(href='/' + user.user_name + '/notifications') Notifications
             br

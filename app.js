@@ -26,15 +26,17 @@ var MACRO = require('./model/macro.js')
   , fs = require('fs')
   , http = require('http')
   , https = require('https')
-  , everyauth = require('everyauth')
   , mongoose = require('mongoose')
   , core = require('./core.js')
   , cron = require('cron').CronJob
   , favicon = require('serve-favicon')
   , bodyParser = require('body-parser')
   , exprSession = require('express-session')
+  , passport = require('passport')
+  , flash = require('connect-flash')
 
-var Users    = mongoose.model('Users')
+
+var Users = mongoose.model('Users')
 
 // Refresh challenge cron job
 var job = new cron(MACRO.CRON.CHALLENGE, function(){
@@ -42,28 +44,19 @@ var job = new cron(MACRO.CRON.CHALLENGE, function(){
   }, function () {}, true, false
 );
 
-everyauth
-.everymodule
-.findUserById( function (id, callback) {
-  callback(null, global.usersById[id]);
-});
+// Configuring Passport
+require('./auth')(app, passport);
 
-everyauth
-.github
-.appId(global.config.gh_clientId)
-.appSecret(global.config.gh_secret)
-.findOrCreateUser(core.login)
-.redirectPath('/');
-
-
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+app.use(flash())
+app.use(bodyParser.json())
 app.set('admin', MACRO.SUPERUSER);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(favicon(__dirname + "/public/images/rc-logo.ico"));
 app.use(express.static(__dirname + '/public'));
-app.use(everyauth.middleware());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
 app.use(exprSession({
   secret            : global.config.redis_secret,
   resave            : true,
@@ -72,50 +65,44 @@ app.use(exprSession({
     secure: false,
     maxAge: 1800000 //30 min
   }
-}))
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
-// Automatically login if username argument provided, in dev env
-app.all('*', function(req, res, next) {
+// GITHUB LOGIN
+app.get('/auth/github',
+  passport.authenticate('github', {
+    scope : 'email'
+  })
+);
+app.get('/auth/github/callback',
+  passport.authenticate('github', {
+      successRedirect : '/',
+      failureRedirect : '/login'
+  })
+);
+app.get('/logout', function(req, res) {
+  req.logout()
+  res.redirect('/')
+});
 
-  if (global.config.status === 'dev') {
-    username = ''
-    regex = '/login/(.*)'
-
-    if (req.path.match(regex)) {
-      username = req.path.match(regex)[1]
-    } else if (global.config.login) {
-      username = global.config.login
-      global.config.login = false
-    } else {
-      return next()
-    }
-
+// Auto login with dummy user in development if 'login' argument is provided
+app.use(function (req, res, next) {
+  if (req.app.get('env') == 'development' && process.argv[2] == 'login' && !req.user) {
+    username = process.argv[3] || 'dev_user'
     userid = parseInt(username, 36)
     core.add_user(userid, username, generate_session)
 
-    function generate_session (err) {
-      if (err) console.log('[ERR] Could not add user to db.')
-
-      req.session.regenerate(function (err) {
-        req.session.auth = {
-          'loggedIn':  true,
-          'github': {
-            'user': {
-              'id':    userid,
-              'login': username
-            }
-          }
-        }
-
-        return next()
-      })
+    function generate_session(err, user) {
+      req.login(user, function(err) {
+        return next();
+      });
     }
-
   } else {
-    return next()
+    return next();
   }
-})
+});
 
 
 // routes defined here
@@ -167,13 +154,13 @@ app.use(profile.index);
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
-  if (req.session.auth) return next();
+  if (req.user) return next();
   res.redirect('/login');
 }
 
 // Make sure user is authenticated and root middleware
 function ensureSuper(req, res, next) {
-  if (req.session.auth && MACRO.SUPERUSER.indexOf(req.session.auth.github.user.login) > -1)
+  if (req.user && MACRO.SUPERUSER.indexOf(req.user.user_name) > -1)
     return next();
 
   return res.render('404', {title: "404: File not found"});

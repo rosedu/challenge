@@ -12,7 +12,7 @@ var markdown = require( "markdown" ).markdown;
 View all challenges.
 */
 exports.index = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var uid   = req.user ? req.user.user_id : null
   var _self = {};
 
   Users.findOne({'user_id': uid}).exec(gotUser);
@@ -46,10 +46,9 @@ exports.index = function(req, res) {
 Single challenge page.
 */
 exports.one = function(req, res) {
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
-
+  var uid   = req.user ? req.user.user_id : null
   var _self = {};
-  var preq = [];
+  var preq  = [];
 
   _self.err = req.query.err
 
@@ -81,7 +80,7 @@ exports.one = function(req, res) {
     ch.about_mk = markdown.toHTML(ch.about);
 
     // Check if current user is admin
-    if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
+    if (uid && ch.admins.indexOf(req.user.user_name) > -1)
       _self.user.admin = true;
     else if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
       return res.redirect('/challenges/' + req.params.ch);
@@ -120,7 +119,7 @@ exports.one = function(req, res) {
 
     // Check if current user joined challenge
     if (uid) _self.user.joined = false;
-    if (uid && ch.users.indexOf(req.session.auth.github.user.login) > -1)
+    if (uid && ch.users.indexOf(req.user.user_name) > -1)
       _self.user.joined = true;
 
     if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
@@ -166,7 +165,7 @@ exports.edit = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     // Check if no repos specified (remove empty string)
@@ -206,7 +205,7 @@ exports.update_formulae = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch)
 
 
@@ -253,7 +252,7 @@ exports.join = function(req, res) {
   function gotChallenge(err, ch) {
     if (ch.status != 'closed') {
       var conditions = {'link': req.params.ch};
-      var update = {$addToSet: {'users': req.session.auth.github.user.login}};
+      var update = {$addToSet: {'users': req.user.user_name}};
       Challenges.update(conditions, update, function (err, num) {
         res.redirect('/challenges/' + req.params.ch);
       });
@@ -286,7 +285,7 @@ exports.rate = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch)
 
     var conditions = {'pulls._id': new mongoose.Types.ObjectId(req.query.id)}
@@ -306,7 +305,7 @@ exports.hide_commit = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch)
 
     var conditions = {'pulls._id': new mongoose.Types.ObjectId(req.query.id)}
@@ -327,7 +326,7 @@ exports.display_commit = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch)
 
     var conditions = {'pulls._id': new mongoose.Types.ObjectId(req.query.id)}
@@ -348,7 +347,7 @@ exports.admin_add = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     var conditions = {'link': req.params.ch};
@@ -370,7 +369,7 @@ exports.admin_remove = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     var conditions = {'link': req.params.ch};
@@ -391,7 +390,7 @@ exports.repo_remove = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     var conditions = {'link': req.params.ch};
@@ -413,7 +412,7 @@ exports.email_users = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     Users.find({'user_name': {$in: ch.users}}).select('user_email').exec(gotUsers);
@@ -469,7 +468,7 @@ exports.blacklist_user = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     // Blacklist user
@@ -499,7 +498,7 @@ exports.unblacklist_user = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Check if user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+    if (ch.admins.indexOf(req.user.user_name) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
     // Unblacklist user
