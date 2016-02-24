@@ -52,7 +52,7 @@ module.exports = function(app, passport) {
           // Send welcome notification
           new Notifications({
             'src':    null,
-            'dest':   usersByGhId[ghUser.id].github.login,
+            'dest':   profile.username,
             'type':   "welcome",
             'link':   "/faq"
           }).save(function(err, todo, count) {
