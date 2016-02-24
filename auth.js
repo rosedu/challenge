@@ -39,7 +39,7 @@ module.exports = function(app, passport) {
           var update = {$set: {
             'last_seen':     Date.now(),
             'user_fullname': profile.displayName,
-            'user_email':    profile.emails[0].value || null,
+            'user_email':    (profile.emails ? profile.emails[0].value : null),
             'followers_no':  profile._json.followers,
             'following_no':  profile._json.following,
             'location':      profile._json.location,
@@ -64,7 +64,7 @@ module.exports = function(app, passport) {
             'user_id':       profile.id,
             'user_name':     profile.username,
             'user_fullname': profile.displayName,
-            'user_email':    profile.emails[0].value || null,
+            'user_email':    (profile.emails ? profile.emails[0].value : null),
             'avatar_url':    profile._json.avatar_url,
             'followers_no':  profile._json.followers,
             'following_no':  profile._json.following,
