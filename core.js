@@ -131,18 +131,26 @@ function create_patch_request(ch, pull) {
         // Generate unique PR id
         var oid = md5(pull.html_url).substring(0,12)
 
-        var update = {$set: {
-          'pulls.$.title':          pull.title,
-          'pulls.$.created':        new Date(pull.created_at),
-          'pulls.$.merged':         merge_date,
-          'pulls.$.lines_inserted': pull_info.additions,
-          'pulls.$.lines_removed':  pull_info.deletions,
-          'pulls.$.files_changed':  pull_info.changed_files
-        }}
 
-        Challenges.update({'pulls.url': pull.html_url}, update, function (err, count) {
+        Challenges.findOne({'pulls.url': pull.html_url}, function (err, pr) {
           // No updates were made, object did not exist, let's push it
-          if (count.nModified == 0) {
+          if (err) console.log(err)
+
+          if (pr) {
+            var update = {$set: {
+              'pulls.$.title':          pull.title,
+              'pulls.$.created':        new Date(pull.created_at),
+              'pulls.$.merged':         merge_date,
+              'pulls.$.lines_inserted': pull_info.additions,
+              'pulls.$.lines_removed':  pull_info.deletions,
+              'pulls.$.files_changed':  pull_info.changed_files
+            }}
+            // Update PR object
+            Challenges.update({'pulls.url': pull.html_url}, update, function (err) {
+              if (err) console.log('Failed to update PR: ' + err)
+            });
+
+          } else {
             var newpr = {
               '_id':            new mongoose.Types.ObjectId(oid),
               'repo':           pull.base.repo.full_name,
@@ -158,12 +166,13 @@ function create_patch_request(ch, pull) {
               'lines_removed':  pull_info.deletions,
               'files_changed':  pull_info.changed_files
             }
-
             // Update score if formulae is valid
             if (exports.eval_formulae(ch.formulae))
               newpr['score'] = exports.eval_formulae(ch.formulae, newpr)
-
-            Challenges.update({'link': ch.link}, {$push: {pulls: newpr}}).exec()
+            // Update challenge object
+            Challenges.update({'link': ch.link}, {$push: {pulls: newpr}}, function (err) {
+              if (err) console.log('Failed to add new PR: ' + err)
+            });
           }
         })
       });
