@@ -118,3 +118,19 @@ exports.faq = function(req, res) {
     });
   });
 };
+
+/*
+Guidelines page.
+*/
+exports.guidelines = function(req, res) {
+  var uid   = req.user ? req.user.user_id : null
+
+  Users.findOne({ user_id: uid }, function(err, user) {
+    if (err) return handleError(err);
+
+    res.render('guidelines', {
+      title:  "Guidelines and rules of conduct",
+      user:   user
+    });
+  });
+};

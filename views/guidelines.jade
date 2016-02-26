@@ -1,0 +1,53 @@
+extends layout
+
+block content
+  #content
+    h1= title
+    .spacer
+
+    .left
+      h3 A set of guidelines and rules of conduct of the competition.
+      h4 General
+      P
+        | ROSEdu Challenge is for everyone, regardless of gender, sexual orientation,
+        | disability, physical appearance, body size, race, or religion.
+      p
+        | ROSEdu members and event partners, and also employees of our partners can't
+        | be participants and receive prizes in the competition.
+      P
+        | Participants have to have Romanian residency at the time of the competition.
+        | If a winner is not able to receive its prize in person, the prize will be
+        | sent via a courier, only in Romania.
+      P
+        | A contributor can win a single prize, so she/he will be considered a winner for a
+        | single project. The admin team will decided for what project the person will be elected as a winner.
+      P
+        | ROSEdu is not liable for any additional taxes which have to be paid for the prizes
+        | or the delivery process.
+
+      h4 Contributions
+      P
+        | All contributions must be made during the competition and will not be submitted
+        | in other competitions organised by ROSEdu or in partnership with ROSEdu.
+      P
+        | Contributions which involve adding / deleting / updating a library inside the project,
+        | example: Bootstrap, JQuery, will have a score equal with 0. This doesn't apply when
+        | a library is modified to solve a bug and the fix can't be submitted for the original project,
+        | the project mentor will score the contribution with a score greater or equal with 0.
+      P
+        | Each workflow should take in consideration the repository guidelines for contributing.
+        | If no guideline is defined, the participant should use the [Github Flow](https://guides.github.com/introduction/flow/).
+      P
+        | By joining the challenge you accept the above guidelines and rules of conduct.
+        | Breaking one one of the rules can get you out of the competition.
+
+      h4 Good luck!
+
+    .right
+      .submenu
+        a(href='/faq')
+          .submenu-item FAQ
+        a(href='/guidelines')
+          .submenu-item-selected Guidelines
+        a(href='/contact')
+          .submenu-item Contact

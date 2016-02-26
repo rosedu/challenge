@@ -111,6 +111,7 @@ app.get('/', other.index);
 app.get('/login', other.login);
 app.get('/login/:user', other.login);
 app.get('/faq', other.faq);
+app.get('/guidelines', other.guidelines);
 app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
 
