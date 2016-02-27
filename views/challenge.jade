@@ -47,6 +47,8 @@ block content
             input.btn.btn-success(type='submit', value='Edit challenge')
           a(href='/challenges/' + challenge.link + '/refresh')
             input.btn.btn-success(type='submit', value='Refresh')
+          a(href='/challenges/' + challenge.link + '/update_results')
+            input.btn.btn-success(type='submit', value='Update results')
 
   #content
     .left
@@ -281,6 +283,14 @@ block content
 
       - if (currentUrl == '/challenges/' + challenge.link + '/results')
         h2 Results
+        
+        - if (challenge.status != 'closed')
+          .announcement
+            .announcement-inner    
+              | This is NOT visible to participants.
+              | Change Challenge status to "closed" to make it visible.
+          .spacer
+        
         - if (scores.length != 0)
           - each r, i in scores
             div.ch-result(class=(i%2==0?'highlight':''))
