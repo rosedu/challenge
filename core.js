@@ -8,8 +8,9 @@ var md5        = require('md5');
 var MACRO = require('./model/macro.js');
 
 var Users = mongoose.model('Users');
+var Repo  = mongoose.model('Repo');
 var Notifications = mongoose.model('Notifications');
-var Challenges = mongoose.model('Challenges');
+var Challenges    = mongoose.model('Challenges');
 
 var nextUserId = 0;
 global.usersById = {};
@@ -277,6 +278,54 @@ exports.refresh_challenges = function() {
         request.end();
 
       }
+    }
+  }
+}
+
+exports.update_repo_info = function(ch_link) {
+  Challenges.findOne({'link': ch_link}).exec(gotChallenge);
+
+  function gotChallenge (err, ch) {
+    if (!ch) {
+      console.log('ERR Could not find repo with link ' + ch_link + ' for update')
+    } else {
+      ch.repos.forEach(function(repo) {
+        // Request repo info from Github
+        var options = {
+          host: "api.github.com",
+          path: "/repos/" + repo,
+          method: "GET",
+          headers: { "User-Agent": "github-connect" }
+        };
+
+        var request = https.request(options, function(response){
+          var body = '';
+
+          response.on("data", function(chunk){
+            body+=chunk.toString("utf8");
+          });
+
+          response.on("end", function() {
+            var repo = JSON.parse(body);
+
+            // Log errors
+            if (repo.message)
+              console.log("[ERR] " + repo.message + " - " + options.path
+                + " (" + repo.documentation_url + ")");
+
+            var query = {
+              'name': repo.full_name
+            }
+            var update = {
+              'name':        repo.full_name,
+              'description': repo.description,
+              'link':        repo.homepage
+            }
+            Repo.update(query, update, {upsert: true}).exec()
+          });
+        });
+        request.end();
+      });
     }
   }
 }

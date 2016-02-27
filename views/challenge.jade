@@ -54,11 +54,17 @@ block content
         h2 Repositories
         - if (challenge.repos.length)
           - for (var r=0; r<challenge.repos.length; r++)
+            - var repo_info = {}
+            - if (challenge.repos_info[challenge.repos[r]])
+              - var repo_info = challenge.repos_info[challenge.repos[r]]
+
             .ch-repo
               .profile-repo-icon-forked
-              .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
+              .ch-repo-numbers= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
-          .ch-pull-info= "* Fork the project and contribute now."
+              | #[ ] ( #[a(href=repo_info.link) External Link] )
+              .ch-repo-description= repo_info.desc
+          .ch-repo-numbers= "* Fork the project and contribute now."
         - else
           p There are no repos set for this challenge.
         .spacer

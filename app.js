@@ -140,6 +140,10 @@ app.get('/challenges/:ch/update_results', challenge.update_results);
 app.post('/challenges/:ch/blacklist_user', ensureAuth, challenge.blacklist_user);
 app.get('/challenges/:ch/unblacklist_user', ensureAuth, challenge.unblacklist_user);
 
+app.get('/ceva', function(req, res) {
+  core.update_repo_info('ROSEduChallengeBeta')
+})
+
 
 var admin = require('./routes/admin.js');
 app.get('/admin', ensureSuper, admin.index);
