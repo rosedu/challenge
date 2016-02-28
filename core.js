@@ -283,12 +283,15 @@ exports.refresh_challenges = function() {
 }
 
 exports.update_repo_info = function(ch_link) {
-  Challenges.findOne({'link': ch_link}).exec(gotChallenge);
+  if (typeof ch_link == 'undefined')
+    Challenges.find().exec(gotChallenge);
+  else
+    Challenges.find({'link': ch_link}).exec(gotChallenge);
 
-  function gotChallenge (err, ch) {
-    if (!ch) {
-      console.log('ERR Could not find repo with link ' + ch_link + ' for update')
-    } else {
+  function gotChallenge (err, all) {
+    if (err) return console.log('ERR. Cannot update repo info.')
+
+    all.forEach(function(ch) {
       ch.repos.forEach(function(repo) {
         // Request repo info from Github
         var options = {
@@ -326,7 +329,8 @@ exports.update_repo_info = function(ch_link) {
         });
         request.end();
       });
-    }
+    });
+
   }
 }
 

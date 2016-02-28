@@ -140,7 +140,7 @@ exports.one = function(req, res) {
       // Convert list to dict
       _self.ch.repos_info[repo.name] = {
         'desc': repo.description,
-        'link':  repo.link
+        'link': repo.link
       }
     });
     renderPage();

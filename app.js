@@ -43,6 +43,12 @@ var job = new cron(MACRO.CRON.CHALLENGE, function(){
     core.refresh_challenges();
   }, function () {}, true, false
 );
+// Refresh information about repos
+var job = new cron(MACRO.CRON.CHALLENGE, function(){
+    core.update_repo_info();
+  }, function () {}, true, false
+);
+
 
 // Configuring Passport
 require('./auth')(app, passport);
@@ -139,10 +145,6 @@ app.get('/challenges/:ch/results', challenge.one);
 app.get('/challenges/:ch/update_results', challenge.update_results);
 app.post('/challenges/:ch/blacklist_user', ensureAuth, challenge.blacklist_user);
 app.get('/challenges/:ch/unblacklist_user', ensureAuth, challenge.unblacklist_user);
-
-app.get('/ceva', function(req, res) {
-  core.update_repo_info('ROSEduChallengeBeta')
-})
 
 
 var admin = require('./routes/admin.js');
