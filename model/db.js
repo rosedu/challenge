@@ -41,7 +41,7 @@ var Pulls = new Schema({
   score:           {type: Number, default: 0},
   lines_inserted:  {type: Number, default: 0},
   lines_removed:   {type: Number, default: 0},
-  files_changes:   {type: Number, default: 0}
+  files_changed:   {type: Number, default: 0}
 });
 
 var Challenges = new Schema({
