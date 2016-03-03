@@ -8,8 +8,9 @@ var md5        = require('md5');
 var MACRO = require('./model/macro.js');
 
 var Users = mongoose.model('Users');
+var Repo  = mongoose.model('Repo');
 var Notifications = mongoose.model('Notifications');
-var Challenges = mongoose.model('Challenges');
+var Challenges    = mongoose.model('Challenges');
 
 var nextUserId = 0;
 global.usersById = {};
@@ -278,6 +279,58 @@ exports.refresh_challenges = function() {
 
       }
     }
+  }
+}
+
+exports.update_repo_info = function(ch_link) {
+  if (typeof ch_link == 'undefined')
+    Challenges.find().exec(gotChallenge);
+  else
+    Challenges.find({'link': ch_link}).exec(gotChallenge);
+
+  function gotChallenge (err, all) {
+    if (err) return console.log('ERR. Cannot update repo info.')
+
+    all.forEach(function(ch) {
+      ch.repos.forEach(function(repo) {
+        // Request repo info from Github
+        var options = {
+          host: "api.github.com",
+          path: "/repos/" + repo,
+          method: "GET",
+          headers: { "User-Agent": "github-connect" }
+        };
+
+        var request = https.request(options, function(response){
+          var body = '';
+
+          response.on("data", function(chunk){
+            body+=chunk.toString("utf8");
+          });
+
+          response.on("end", function() {
+            var repo = JSON.parse(body);
+
+            // Log errors
+            if (repo.message)
+              console.log("[ERR] " + repo.message + " - " + options.path
+                + " (" + repo.documentation_url + ")");
+
+            var query = {
+              'name': repo.full_name
+            }
+            var update = {
+              'name':        repo.full_name,
+              'description': repo.description,
+              'link':        repo.homepage
+            }
+            Repo.update(query, update, {upsert: true}).exec()
+          });
+        });
+        request.end();
+      });
+    });
+
   }
 }
 

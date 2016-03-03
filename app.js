@@ -43,6 +43,12 @@ var job = new cron(MACRO.CRON.CHALLENGE, function(){
     core.refresh_challenges();
   }, function () {}, true, false
 );
+// Refresh information about repos
+var job = new cron(MACRO.CRON.CHALLENGE, function(){
+    core.update_repo_info();
+  }, function () {}, true, false
+);
+
 
 // Configuring Passport
 require('./auth')(app, passport);

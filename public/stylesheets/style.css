@@ -701,14 +701,6 @@ a:hover {
     background-color: #F5F9FC;
 }
 
-.profile-repo-icon-forked {
-    width: 30px;
-    height: 40px;
-    float: left;
-    background-image: url('/images/icon-repo-forked.png');
-    background-repeat: no-repeat;
-}
-
 .profile-header {
     padding: 10px;
     background-image: linear-gradient(#FAFAFA, #EAEAEA);
@@ -922,6 +914,7 @@ a:hover {
 }
 
 .ch-repo {
+    min-height: 40px;
     padding: 10px;
     clear: both;
     border-bottom: 1px solid #E5E5E5;
@@ -933,9 +926,37 @@ a:hover {
     border-bottom: 1px solid #E5E5E5;
 }
 
-.ch-pull-info {
+.ch-repo-right {
     float: right;
     color: rgb(216, 216, 216);
+}
+
+.ch-repo-numbers {
+    width: 140px;
+    float: left;
+    color: rgb(216, 216, 216);
+}
+
+.ch-repo-name {
+    width: 570px;
+    float: left;
+}
+
+.ch-repo-name-text {
+    float: left;
+}
+
+.ch-repo-name-link{
+  width: 30px;
+  min-height: 20px;
+  float: left;
+  margin-left: 5px;
+  background-image: url('/images/icon-external-link.png');
+  background-repeat: no-repeat;
+}
+
+.ch-repo-description {
+    float: left;
 }
 
 .ch-pull-score {
@@ -984,4 +1005,20 @@ a:hover {
     width: 400px;
     float: left;
     text-align: right;
+}
+
+.ch-repo-icon-forked {
+    width: 30px;
+    height: 40px;
+    float: left;
+    background-image: url('/images/icon-repo-forked.png');
+    background-repeat: no-repeat;
+}
+
+.ch-repo-icon-starred {
+    width: 30px;
+    height: 40px;
+    float: left;
+    background-image: url('/images/icon-star.png');
+    background-repeat: no-repeat;
 }

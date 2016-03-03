@@ -56,11 +56,25 @@ block content
         h2 Repositories
         - if (challenge.repos.length)
           - for (var r=0; r<challenge.repos.length; r++)
+            - var repo_info = {}
+            - if (challenge.repos_info[challenge.repos[r]])
+              - var repo_info = challenge.repos_info[challenge.repos[r]]
+
             .ch-repo
-              .profile-repo-icon-forked
-              .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
-              a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
-          .ch-pull-info= "* Fork the project and contribute now."
+              - if (challenge.repos[r].indexOf('rosedu') > -1)
+                .ch-repo-icon-forked(title='ROSEdu project')
+              - else
+                .ch-repo-icon-starred(title='Partner project')
+              .ch-repo-name
+                .ch-repo-name-text
+                  a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+                - if (repo_info.link)
+                  a(href=repo_info.link): .ch-repo-name-link
+              .ch-repo-numbers
+                = "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
+              .ch-repo-description
+                = repo_info.desc
+
         - else
           p There are no repos set for this challenge.
         .spacer
@@ -114,13 +128,13 @@ block content
           - if (!p.hide || (user && user.admin))
             .ch-pull
               a(href='/#{p.auth}')= p.auth
-              .ch-pull-info= "#" + p.repo
+              .ch-repo-right= "#" + p.repo
               br
               a(href='#{p.url}')= p.title
               - if (p.merged)
-                .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
+                .ch-repo-right= "Merged on " + p.merged.toString().substr(3,12)
               - else
-                .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
+                .ch-repo-right= "Created on " + p.created.toString().substr(3,12)
 
               br
               p= "• Files changed: " + p.files_changed + "    "
@@ -160,11 +174,11 @@ block content
           h5 Challenge is closed.
 
         .spacer
-        h2 Repository
+        h2 Repos
         - if (challenge.repos.length)
           - for (var r=0; r<challenge.repos.length; r++)
             .ch-repo
-              .ch-pull-info
+              .ch-repo-right
                 a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
               = " -- " + challenge.created_no[r] + " created, " + challenge.merged_no[r] + " merged"

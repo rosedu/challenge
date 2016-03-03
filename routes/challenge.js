@@ -5,6 +5,7 @@ var Users = mongoose.model('Users');
 var Challenges = mongoose.model('Challenges');
 var Pulls = mongoose.model('Pulls');
 var Results = mongoose.model('Results');
+var Repo = mongoose.model('Repo');
 var https = require('https');
 var markdown = require( "markdown" ).markdown;
 
@@ -122,13 +123,27 @@ exports.one = function(req, res) {
     if (uid && ch.users.indexOf(req.user.user_name) > -1)
       _self.user.joined = true;
 
-    if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
+    if (req.path.substring(req.path.lastIndexOf('/')) == '/' + ch.link) {
+      Repo.find({'name': {$in: ch.repos}}).exec(gotRepos);
+    } else if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
       Users.find({'user_name': {$in: _self.ch.users}}).exec(gotPeople);
     } else if (req.path.substring(req.path.lastIndexOf('/')) == '/results') {
       Results.find({'challenge': _self.ch._id}).sort({'total': -1}).exec(gotResults);
     } else {
       renderPage();
     }
+  }
+
+  function gotRepos(err, all) {
+    _self.ch.repos_info = {};
+    all.forEach(function(repo) {
+      // Convert list to dict
+      _self.ch.repos_info[repo.name] = {
+        'desc': repo.description,
+        'link': repo.link
+      }
+    });
+    renderPage();
   }
 
   function gotResults(err, results) {

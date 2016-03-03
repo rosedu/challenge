@@ -70,10 +70,17 @@ var Results = new Schema({
   challenge:   Schema.Types.ObjectId,
 });
 
-mongoose.model( 'Users', Users );
-mongoose.model( 'Notifications', Notifications );
-mongoose.model( 'Challenges', Challenges );
-mongoose.model( 'Pulls', Pulls );
-mongoose.model( 'Results', Results );
+var Repo = new Schema({
+  name:        String,
+  description: String,
+  link:        String,
+});
+
+mongoose.model('Users', Users);
+mongoose.model('Notifications', Notifications);
+mongoose.model('Challenges', Challenges);
+mongoose.model('Pulls', Pulls);
+mongoose.model('Results', Results);
+mongoose.model('Repo', Repo);
 
 mongoose.connect( 'mongodb://localhost/rosedu-challenge' );
