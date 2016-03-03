@@ -47,6 +47,8 @@ block content
             input.btn.btn-success(type='submit', value='Edit challenge')
           a(href='/challenges/' + challenge.link + '/refresh')
             input.btn.btn-success(type='submit', value='Refresh')
+          a(href='/challenges/' + challenge.link + '/update_results')
+            input.btn.btn-success(type='submit', value='Update results')
 
   #content
     .left
@@ -87,6 +89,19 @@ block content
           p= "Last refresh date: " + (challenge.refresh? challenge.refresh : 'N/A')
         - else
           | Time interval not set.
+        .spacer
+
+        h2 Score
+        | The score for each contribution is calculated automatically, using
+        | the following flormulae: <br><br>
+
+        .ch-formulae= (challenge.formulae ? challenge.formulae : 'Will be announced soon.')
+
+        h5 Legend
+        | <b>R</b>  - Mentor Rating (1-5)<br>
+        | <b>IL</b> - Number of inserted lines <br>
+        | <b>RL</b> - Number of removed lines <br>
+        | <b>FC</b> - Number of files changed <br>
         .spacer
 
         h2 About
@@ -295,6 +310,14 @@ block content
 
       - if (currentUrl == '/challenges/' + challenge.link + '/results')
         h2 Results
+        
+        - if (challenge.status != 'closed')
+          .announcement
+            .announcement-inner    
+              | This is NOT visible to participants.
+              | Change Challenge status to "closed" to make it visible.
+          .spacer
+        
         - if (scores.length != 0)
           - each r, i in scores
             div.ch-result(class=(i%2==0?'highlight':''))

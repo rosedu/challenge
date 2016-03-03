@@ -518,20 +518,16 @@ a:hover {
 }
 
 .announcement {
-    width: 980px;
-    height: 70px;
+    width: 100%;
     border: 1px solid #97C1DA;
     border-radius: 3px;
-    vertical-align: middle;
     background-image: linear-gradient(#D8EBF8, #D0E3EF);
     background-repeat: repeat-x;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .announcement-inner {
-    width: 964px;
-    height: 50px;
-    padding-top: 25px;
+    padding: 20px 0px 15px 0px;
     margin-left: auto;
     margin-right: auto;
     color: black;
@@ -539,7 +535,6 @@ a:hover {
     text-align: center;
     font-family: Helvetica,arial,freesans;
     text-decoration: none;
-    vertical-align: middle;
 }
 
 .err {
@@ -910,6 +905,14 @@ a:hover {
     margin-bottom: 5px;
 }
 
+.ch-formulae {
+    padding: 8px;
+    border: solid 1px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
 .ch-repo {
     min-height: 40px;
     padding: 10px;
@@ -994,12 +997,12 @@ a:hover {
 }
 
 .ch-result-auth {
-    width: 100px;
+    width: 300px;
     float: left;
 }
 
 .ch-result-score {
-    width: 600px;
+    width: 400px;
     float: left;
     text-align: right;
 }
