@@ -75,6 +75,19 @@ block content
           | Time interval not set.
         .spacer
 
+        h2 Score
+        | The score for each contribution is calculated automatically, using
+        | the following flormulae: <br><br>
+
+        .ch-formulae= challenge.formulae
+
+        h5 Legend
+        | <b>R</b>  - Mentor Rating (1-5)<br>
+        | <b>IL</b> - Number of inserted lines <br>
+        | <b>RL</b> - Number of removed lines <br>
+        | <b>FC</b> - Number of files changed <br>
+        .spacer
+
         h2 About
         - if (challenge.about)
           p!= challenge.about_mk

@@ -918,6 +918,14 @@ a:hover {
     margin-bottom: 5px;
 }
 
+.ch-formulae {
+    padding: 8px;
+    border: solid 1px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
 .ch-repo {
     padding: 10px;
     clear: both;
