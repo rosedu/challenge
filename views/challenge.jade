@@ -79,7 +79,7 @@ block content
         | The score for each contribution is calculated automatically, using
         | the following flormulae: <br><br>
 
-        .ch-formulae= challenge.formulae
+        .ch-formulae= (challenge.formulae ? challenge.formulae : 'Will be announced soon.')
 
         h5 Legend
         | <b>R</b>  - Mentor Rating (1-5)<br>
