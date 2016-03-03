@@ -125,7 +125,7 @@ exports.one = function(req, res) {
     if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
       Users.find({'user_name': {$in: _self.ch.users}}).exec(gotPeople);
     } else if (req.path.substring(req.path.lastIndexOf('/')) == '/results') {
-      Results.find().sort({'total': -1}).exec(gotResults);
+      Results.find({'challenge': _self.ch._id}).sort({'total': -1}).exec(gotResults);
     } else {
       renderPage();
     }
@@ -190,8 +190,12 @@ exports.edit = function(req, res) {
         'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))
     }};
     Challenges.update(conditions, update, function (err, num) {
-      console.log("* Owner made changes to challenge " + req.body.name);
-      res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
+      if (err) {
+        console.log("Failed to edit challenge name to: " + req.body.name)
+      } else {
+        console.log("* Owner made changes to challenge " + req.body.name);
+        res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
+      }
     });
   }
 };
@@ -428,13 +432,16 @@ exports.email_users = function(req, res) {
 };
 
 /*
-Temporarily route to populate results.
+Update challenge results.
 Puts 0 for hidden pull requests.
 */
 exports.update_results = function(req, res) {
   Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
 
   function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.user.user_name) < 0)
+      return res.redirect('/challenges/' + req.params.ch)
 
     results = {}
     ch.pulls.forEach(function (pr) {

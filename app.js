@@ -136,7 +136,7 @@ app.get('/challenges/:ch/refresh', ensureAuth, challenge.refresh);
 app.get('/challenges/:ch/hide_commit', ensureAuth, challenge.hide_commit);
 app.get('/challenges/:ch/display_commit', ensureAuth, challenge.display_commit);
 app.get('/challenges/:ch/results', challenge.one);
-app.get('/challenges/:ch/update_results', challenge.update_results);
+app.get('/challenges/:ch/update_results', ensureAuth, challenge.update_results);
 app.post('/challenges/:ch/blacklist_user', ensureAuth, challenge.blacklist_user);
 app.get('/challenges/:ch/unblacklist_user', ensureAuth, challenge.unblacklist_user);
 
