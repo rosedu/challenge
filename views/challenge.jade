@@ -113,13 +113,13 @@ block content
           - if (!p.hide || (user && user.admin))
             .ch-pull
               a(href='/#{p.auth}')= p.auth
-              .ch-repo-numbers= "#" + p.repo
+              .ch-repo-right= "#" + p.repo
               br
               a(href='#{p.url}')= p.title
               - if (p.merged)
-                .ch-repo-numbers= "Merged on " + p.merged.toString().substr(3,12)
+                .ch-repo-right= "Merged on " + p.merged.toString().substr(3,12)
               - else
-                .ch-repo-numbers= "Created on " + p.created.toString().substr(3,12)
+                .ch-repo-right= "Created on " + p.created.toString().substr(3,12)
 
               br
               p= "• Files changed: " + p.files_changed + "    "
@@ -159,11 +159,11 @@ block content
           h5 Challenge is closed.
 
         .spacer
-        h2 Repository
+        h2 Repos
         - if (challenge.repos.length)
           - for (var r=0; r<challenge.repos.length; r++)
             .ch-repo
-              .ch-repo-numbers
+              .ch-repo-right
                 a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
               a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
               = " -- " + challenge.created_no[r] + " created, " + challenge.merged_no[r] + " merged"

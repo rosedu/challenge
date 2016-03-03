@@ -923,6 +923,11 @@ a:hover {
     border-bottom: 1px solid #E5E5E5;
 }
 
+.ch-repo-right {
+    float: right;
+    color: rgb(216, 216, 216);
+}
+
 .ch-repo-numbers {
     width: 140px;
     float: left;
