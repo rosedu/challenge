@@ -932,13 +932,13 @@ a:hover {
 }
 
 .ch-repo-numbers {
-    width: 140px;
+    width: 150px;
     float: left;
     color: rgb(216, 216, 216);
 }
 
 .ch-repo-name {
-    width: 570px;
+    width: 560px;
     float: left;
 }
 
@@ -957,6 +957,10 @@ a:hover {
 
 .ch-repo-description {
     float: left;
+    width: 700px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
 }
 
 .ch-pull-score {
