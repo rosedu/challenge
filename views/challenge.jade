@@ -318,16 +318,16 @@ block content
               | Change Challenge status to "closed" to make it visible.
           .spacer
         
-        - if (scores.length != 0)
-          - each r, i in scores
+        - each repo, i in scores
+          - if (i !== 'undefined')
+            h3= i
+          - each contrib, i in repo
             div.ch-result(class=(i%2==0?'highlight':''))
               .ch-result-no= i + '.'
               .ch-result-auth
-                a(href='/#{r.auth}')= r.auth
-              .ch-result-score= r.total
-          .spacer
-        - else
-          | No results are available at the moment.
+                a(href='/#{contrib.auth}')= contrib.auth
+              .ch-result-score= contrib.total
+        .spacer
         .spacer
         .spacer
 

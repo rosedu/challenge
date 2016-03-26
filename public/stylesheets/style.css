@@ -932,13 +932,13 @@ a:hover {
 }
 
 .ch-repo-numbers {
-    width: 150px;
+    width: 160px;
     float: left;
     color: rgb(216, 216, 216);
 }
 
 .ch-repo-name {
-    width: 560px;
+    width: 550px;
     float: left;
 }
 

@@ -66,6 +66,7 @@ var Challenges = new Schema({
 
 var Results = new Schema({
   auth:        String,
+  repo:        String,
   total:       Number,
   challenge:   Schema.Types.ObjectId,
 });

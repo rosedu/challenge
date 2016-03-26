@@ -63,6 +63,10 @@ exports.one = function(req, res) {
   function gotChallenge(err, ch) {
     if (!ch) return res.render('404', {title: "404: File not found"});
 
+    // Sort repos in challenge by name, so we keep our repos separated
+    // from our partners'
+    ch.repos.sort(function(r1, r2) { return r1 < r2; });
+
     // Formate dates
     ch.end_f = "", ch.start_f = "";
     if (ch.start) {
@@ -143,11 +147,17 @@ exports.one = function(req, res) {
         'link': repo.link
       }
     });
+
     renderPage();
   }
 
   function gotResults(err, results) {
-    _self.results = results;
+    _self.results = {};
+    results.forEach(function(res) {
+      if (!(res.repo in _self.results))
+        _self.results[res.repo] = [];
+      _self.results[res.repo].push(res);
+    });
     renderPage();
   }
 
@@ -164,7 +174,7 @@ exports.one = function(req, res) {
       'challenge':  _self.ch,
       'pulls':      _self.ch.pulls,
       'people':     _self.people,
-      'scores':    _self.results,
+      'scores':     _self.results,
       'err':        _self.err
     });
   }
@@ -460,23 +470,32 @@ exports.update_results = function(req, res) {
 
     results = {}
     ch.pulls.forEach(function (pr) {
-      if (!pr.hide && pr.auth in results) {
-        results[pr.auth] += pr.score
-      } else if (!pr.hide){
-        results[pr.auth] = pr.score
+      if (!(pr.repo in results)) {
+        results[pr.repo] = {}
+      }
+
+      if (!pr.hide && pr.auth in results[pr.repo]) {
+        results[pr.repo][pr.auth] += pr.score
+      } else if (!pr.hide) {
+        results[pr.repo][pr.auth] = pr.score
       } else {
-        results[pr.auth] = 0
+        results[pr.repo][pr.auth] = 0
       }
     })
 
     // Push updates to results collection
-    for (var author in results) {
-      update = {
-        'auth':      author,
-        'total':     results[author],
-        'challenge': ch._id
+    for (var repo in results) {
+      for (var auth in results[repo]) {
+        query = {
+          'auth':      auth,
+          'repo':      repo,
+          'challenge': ch._id
+        }
+        update = {
+          'total':     results[repo][auth],
+        }
+        Results.update(query, update, {upsert: true}).exec();
       }
-      Results.update({'auth': author}, update, {upsert: true}).exec()
     }
     res.redirect('/challenges/' + ch.link)
   }
