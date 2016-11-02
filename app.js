@@ -10,9 +10,12 @@ if ('development' == app.get('env')) {
 }
 
 if ('production' == app.get('env')) {
-  global.config.gh_clientId = process.env.clientId;
-  global.config.gh_secret = process.env.secret;
+  global.config.gh_clientId  = process.env.clientId;
+  global.config.gh_secret    = process.env.secret;
   global.config.redis_secret = process.env.redis_secret;
+
+  global.config.wm_clientId = process.env.wm_clientId;
+  global.config.wm_secret   = process.env.wm_secret;
 
   global.config.mail_user = process.env.mail_user;
   global.config.mail_pass = process.env.mail_pass;
@@ -92,6 +95,20 @@ app.get('/logout', function(req, res) {
   req.logout()
   res.redirect('/')
 });
+
+// WIKIMEDIA CONNECTION
+app.get('/connect/wikimedia',
+  passport.authenticate('mediawiki', {
+    scope : 'email'
+  })
+);
+app.get('/auth/gerrit',
+  passport.authenticate('mediawiki', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    //res.redirect('/');
+    res.send('Merge')
+  });
 
 // Auto login with dummy user in development if 'login' argument is provided
 app.use(function (req, res, next) {

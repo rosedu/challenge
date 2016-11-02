@@ -1,6 +1,7 @@
-var passport       = require('passport');
-var mongoose       = require('mongoose');
-var GitHubStrategy = require('passport-github').Strategy;
+var passport          = require('passport');
+var mongoose          = require('mongoose');
+var GitHubStrategy    = require('passport-github').Strategy;
+var MediaWikiStrategy = require('passport-mediawiki-oauth').OAuthStrategy;
 
 var User          = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
@@ -21,6 +22,20 @@ module.exports = function(app, passport) {
     });
   });
 
+  // WIKIMEDIA
+  passport.use(new MediaWikiStrategy({
+      consumerKey       : global.config.wm_clientId,
+      consumerSecret    : global.config.wm_secret,
+      callbackURL       : 'http://localhost:3000/wikimedia',
+      //passReqToCallback : true
+    },
+    function(token, tokenSecret, profile, done) {
+      User.findOrCreate({ mediawikiGlobalId: profile.id }, function (err, user) {
+        console.log(profile)
+        return done(err, user);
+      });
+    }
+  ));
 
   // GITHUB
   passport.use(new GitHubStrategy({
@@ -82,4 +97,6 @@ module.exports = function(app, passport) {
       })
     })
   }))
+
+
 }
