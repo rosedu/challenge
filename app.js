@@ -87,7 +87,7 @@ app.get('/auth/github',
 );
 app.get('/auth/github/callback',
   passport.authenticate('github', {
-      successRedirect : '/',
+      successRedirect : '/login',
       failureRedirect : '/login'
   })
 );
@@ -106,8 +106,7 @@ app.get('/auth/gerrit',
   passport.authenticate('mediawiki', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    //res.redirect('/');
-    res.send('Merge')
+    res.redirect('/login');
   });
 
 // Auto login with dummy user in development if 'login' argument is provided

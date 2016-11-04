@@ -26,14 +26,30 @@ module.exports = function(app, passport) {
   passport.use(new MediaWikiStrategy({
       consumerKey       : global.config.wm_clientId,
       consumerSecret    : global.config.wm_secret,
-      callbackURL       : 'http://localhost:3000/wikimedia',
-      //passReqToCallback : true
-    },
-    function(token, tokenSecret, profile, done) {
-      User.findOrCreate({ mediawikiGlobalId: profile.id }, function (err, user) {
-        console.log(profile)
+      callbackURL       : 'http://challenge.rosedu.org/auth/gerrit',
+      baseURL           : 'https://wikitech.wikimedia.org/',
+      passReqToCallback : true
+
+  }, function(req, token, refreshToken, profile, done) {
+      if (req.user) {
+        User.findOne({'user_id': req.user.user_id}, function(err, user) {
+       	  if (err) return done(err, {});
+       	  if (user) {
+       	    user.wikimedia.id    = profile.id;
+       	    user.wikimedia.token = token;
+       	    user.wikimedia.email = profile._json.email;
+       	    user.wikimedia.name  = profile._json.username;
+
+       	    user.save(function(err) {
+       	      if (err) console.log('Could not login with wikimedia');
+       	      return done(null, user);
+       	    });
+       	  }
         return done(err, user);
-      });
+       	});
+      } else {
+        return done();
+      }
     }
   ));
 
