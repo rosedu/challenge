@@ -33,12 +33,39 @@ block content
       .profile-links
         - if (user)
           - if (user.user_name == cuser.user_name)
+            - if (user.wikimedia.name)
+              b= 'WikiMedia: ' + user.wikimedia.name
+              br
+              br
+            - else
+              a(href='/connect/wikimedia') Connect WikiMedia account
+              br
+              br
             a(href='/' + user.user_name + '/notifications') Notifications
             br
             a(href='/logout') Logout
 
     .profile-right
       - if (currentUrl == '' && joined)
+        .announcement
+          .announcement-inner
+            - if (!user)
+              b WikiMedia Challenge
+              = ' has started. '
+              a(href='/login') Login
+              = ' and join now!'
+            - else if (user && user.wikimedia.name)
+              b WikiMedia Challenge
+              = ' has started. '
+              a(href='/challenges/WikimediaChallenge') Join
+              = ' the challenge now!'
+            - else
+              b WikiMedia Challenge
+              = ' has started.'
+              a(href='/connect/wikimedia') Connect
+              = ' your account and start coding!'
+        .spacer
+
         .profile-header Joined challenges
         - each ch in challenges
           - if (ch.joined)

@@ -1,6 +1,7 @@
-var passport       = require('passport');
-var mongoose       = require('mongoose');
-var GitHubStrategy = require('passport-github').Strategy;
+var passport          = require('passport');
+var mongoose          = require('mongoose');
+var GitHubStrategy    = require('passport-github').Strategy;
+var MediaWikiStrategy = require('passport-mediawiki-oauth').OAuthStrategy;
 
 var User          = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
@@ -21,6 +22,36 @@ module.exports = function(app, passport) {
     });
   });
 
+  // WIKIMEDIA
+  passport.use(new MediaWikiStrategy({
+      consumerKey       : global.config.wm_clientId,
+      consumerSecret    : global.config.wm_secret,
+      callbackURL       : 'http://challenge.rosedu.org/auth/gerrit',
+      baseURL           : 'https://wikitech.wikimedia.org/',
+      passReqToCallback : true
+
+  }, function(req, token, refreshToken, profile, done) {
+      if (req.user) {
+        User.findOne({'user_id': req.user.user_id}, function(err, user) {
+       	  if (err) return done(err, {});
+       	  if (user) {
+       	    user.wikimedia.id    = profile.id;
+       	    user.wikimedia.token = token;
+       	    user.wikimedia.email = profile._json.email;
+       	    user.wikimedia.name  = profile._json.username;
+
+       	    user.save(function(err) {
+       	      if (err) console.log('Could not login with wikimedia');
+       	      return done(null, user);
+       	    });
+       	  }
+        return done(err, user);
+       	});
+      } else {
+        return done();
+      }
+    }
+  ));
 
   // GITHUB
   passport.use(new GitHubStrategy({
@@ -82,4 +113,6 @@ module.exports = function(app, passport) {
       })
     })
   }))
+
+
 }

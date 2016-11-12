@@ -16,6 +16,12 @@ var Users = new Schema({
   join_us:         {type: Date, default: Date.now},
   last_seen:       {type: Date, default: Date.now},
   unread:          {type: Boolean, default: false},
+  wikimedia:       {
+    id           : String,
+    token        : String,
+    email        : String,
+    name         : String
+  }
 });
 
 var Notifications = new Schema({
