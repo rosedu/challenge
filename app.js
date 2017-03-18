@@ -1,6 +1,6 @@
 var express = require('express')
 var app = module.exports = express()
-global.config = []
+global.config = {}
 
 if ('development' == app.get('env')) {
   global.config.redis_secret = 'big secret'
