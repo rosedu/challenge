@@ -15,7 +15,6 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "jade": "^1.11.0",
-    "markdown": "0.5.x",
     "md5": "^2.0.0",
     "mocha": "^2.4.5",
     "mongoose": "^5.9.18",
