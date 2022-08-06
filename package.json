@@ -17,7 +17,7 @@
     "jade": "^1.11.0",
     "md5": "^2.0.0",
     "mocha": "^2.4.5",
-    "mongoose": "^5.9.18",
+    "mongoose": "^6.4.6",
     "nodemailer": ">=6.4.16",
     "nodemon": "^1.9.0",
     "passport": "^0.6.0",
